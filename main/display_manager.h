@@ -3,32 +3,25 @@
 #include "lgfx_custom.h"
 #include "state.h"
 
+#include <vector>
+#include <memory>
+#include "views/view.h"
+
 class DisplayManager
 {
 public:
     DisplayManager(LGFX &lcd, AppState &state);
     void init();
     void displayLoop();
+    void addView(std::unique_ptr<View> view);
 
 private:
     LGFX &m_lcd;
     AppState &m_state;
-    LGFX_Sprite spr;
-    uint16_t colBackground, colNeonViolet, colCyan, colYellow, colHeart;
-    void drawScanlines();
-    void drawNameWithGlow(const char *name1, const char *name2);
-    void drawLikeCounter();
-    void drawNeonText(const char *txt1, const char *txt2, int x, int y1, int y2);
-    void updateNeonFlicker();
-    void drawStaticElements();
+    std::vector<std::unique_ptr<View>> m_views;
+    size_t m_currentView = 0;
+    bool m_wasTouched = false;
+    LGFX_Sprite m_sprite;
+    void nextView();
     bool shouldRenderFrame();
-    void updateScanlineOffset();
-    void updateBrightness();
-    void renderBackground();
-    void renderHeader();
-    void renderHeart();
-    void renderName();
-    void renderSeparator();
-    void renderTeam();
-    void renderLocationAndRole();
 };

@@ -1,3 +1,8 @@
-idf_component_register(SRCS "main.cpp" "display_manager.cpp" "state.cpp"
-                       PRIV_REQUIRES spi_flash LovyanGFX
-                       INCLUDE_DIRS "")
+file(GLOB MAIN_SRCS "*.cpp" "*.c")
+file(GLOB VIEW_SRCS "views/*.cpp")
+
+idf_component_register(
+    SRCS ${MAIN_SRCS} ${VIEW_SRCS}
+    PRIV_REQUIRES spi_flash LovyanGFX
+    INCLUDE_DIRS . views
+)
