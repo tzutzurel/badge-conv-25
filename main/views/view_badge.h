@@ -11,6 +11,8 @@ class ViewBadge : public View
 public:
     ViewBadge(AppState &state, LGFX &lcd);
     void render(LGFX &display, LGFX_Sprite &spr) override;
+    void initParticles();
+    void updateAnimations(float dt);
     void updateNeonIntensity();
     void updateScanlineOffset();
     void renderBackground(LGFX_Sprite &spr);
@@ -20,20 +22,16 @@ public:
     void renderTeam(LGFX_Sprite &spr);
     void renderLocationAndRole(LGFX_Sprite &spr);
     void renderScanlines(LGFX_Sprite &spr);
-    void renderNeonText(LGFX_Sprite &spr, const char *txt1, const char *txt2, int x, int y1, int y2);
     void renderNeonFullName(LGFX_Sprite &spr, const char *name1, const char *name2);
-
-    // Helper pour effets néon simples
-    void drawSimpleNeonText(LGFX_Sprite &spr, const char *text, int x, int y, uint16_t baseColor);
-    void drawNeonLine(LGFX_Sprite &spr, int x1, int y1, int x2, int y2, uint16_t baseColor);
-
-    // Nouveaux effets rétro-futuristes
-    void initParticles();
-    void updateAnimations(float dt);
     void renderCorners(LGFX_Sprite &spr);
     void renderParticles(LGFX_Sprite &spr);
     void renderBorders(LGFX_Sprite &spr);
     void renderGeometricElements(LGFX_Sprite &spr);
+    void renderMicroprocessor(LGFX_Sprite &spr);
+
+    // Helper pour effets néon
+    void drawNeonText(LGFX_Sprite &spr, const char *text, int x, int y, uint16_t baseColor);
+    void drawNeonLine(LGFX_Sprite &spr, int x1, int y1, int x2, int y2, uint16_t baseColor);
 
     AppState &m_state;
     LGFX &m_lcd;

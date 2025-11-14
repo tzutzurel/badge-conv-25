@@ -76,7 +76,7 @@ bool DisplayManager::shouldRenderFrame()
     unsigned long now = lgfx::v1::millis();
     if (now - lastFrame < 16)
     {
-        vTaskDelay(1 / portTICK_PERIOD_MS);
+        vTaskDelay(pdMS_TO_TICKS(1));
         return false;
     }
     lastFrame = now;
