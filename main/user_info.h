@@ -17,11 +17,11 @@ struct UserInfo
 
 // À personnaliser
 constexpr UserInfo user_info = {
-    "Sergent",      // nom
-    "Yann",         // prénom
+    "OPRESCU",      // nom
+    "Ion",         // prénom
     "open|core",    // équipe
-    "LYON",         // ville
-    "DEV FRONTEND", // poste
+    "Lyon",         // ville
+    "IOP Master", // poste
     "MDyloh2NUAa6"  // accessBadgeToken
 };
 

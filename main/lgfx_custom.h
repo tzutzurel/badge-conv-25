@@ -38,19 +38,19 @@ public:
             cfg.pin_cs = 15;
             cfg.pin_rst = -1;
             cfg.pin_busy = -1;
-            cfg.memory_width = 320;
-            cfg.memory_height = 240;
-            cfg.panel_width = 320;
-            cfg.panel_height = 240;
+            cfg.memory_width = 240;
+            cfg.memory_height = 320;
+            cfg.panel_width = 240;
+            cfg.panel_height = 320;
             cfg.offset_x = 0;
             cfg.offset_y = 0;
-            cfg.offset_rotation = 0;
+            //cfg.offset_rotation = 0;
             cfg.dummy_read_pixel = 8;
             cfg.dummy_read_bits = 1;
             cfg.readable = false;
             cfg.invert = false;
-            cfg.offset_rotation = 5; // Portrait
-            cfg.rgb_order = true;
+            cfg.offset_rotation = 0; // Portrait
+            cfg.rgb_order = false;
             cfg.dlen_16bit = false;
             cfg.bus_shared = false;
             _panel_instance.config(cfg);
@@ -75,12 +75,12 @@ public:
             cfg.pin_miso = 39; // T_OUT
             cfg.pin_cs = 33;   // T_CS
             cfg.pin_int = 36;  // T_IRQ
-            cfg.x_min = 3800;
-            cfg.x_max = 300;
-            cfg.y_min = 500;
-            cfg.y_max = 3800;
+            cfg.x_min = 500;
+            cfg.x_max = 3800;
+            cfg.y_min = 3800;
+            cfg.y_max = 300;
             cfg.bus_shared = true;   // Bus partagé avec l'écran
-            cfg.offset_rotation = 5; // Même rotation que l'écran
+            cfg.offset_rotation = 0; // Même rotation que l'écran
             _touch_instance.config(cfg);
             _panel_instance.setTouch(&_touch_instance);
         }
