@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dessiner des Formes - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li>
+            <a href="formes.html" class="active">📐 Dessiner des Formes</a>
+          </li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+      <main class="content">
+        <header class="page-header">
+          <h1>📐 Dessiner des Formes</h1>
+          <p class="subtitle">
+            API pour dessiner pixels, lignes, rectangles, cercles, ellipses,
+            triangles, arcs et plus
+          </p>
+        </header>
+        <section>
+          <div class="card">
+            <h2>🟢 Pixel</h2>
+            <div class="method-card">
+              <h3>drawPixel()</h3>
+              <div class="method-signature">
+                void drawPixel(int32_t x, int32_t y, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawPixel(10, 20, 0xFF0000U); // Pixel rouge en (10,20)</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>📏 Lignes</h2>
+            <div class="method-card">
+              <h3>drawLine()</h3>
+              <div class="method-signature">
+                void drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
+                uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawLine(0, 0, 100, 100, 0x00FF00U); // Diagonale verte</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>drawFastHLine() / drawFastVLine()</h3>
+              <div class="method-signature">
+                void drawFastHLine(int32_t x, int32_t y, int32_t w, uint32_t
+                color) void drawFastVLine(int32_t x, int32_t y, int32_t h,
+                uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawFastHLine(10, 50, 200, 0x0000FFU); // Ligne horizontale bleue
+lcd.drawFastVLine(120, 10, 100, 0xFFFF00U); // Ligne verticale jaune</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>⬛ Rectangles</h2>
+            <div class="method-card">
+              <h3>drawRect() / fillRect()</h3>
+              <div class="method-signature">
+                void drawRect(int32_t x, int32_t y, int32_t w, int32_t h,
+                uint32_t color) void fillRect(int32_t x, int32_t y, int32_t w,
+                int32_t h, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawRect(20, 20, 80, 40, 0xFF00FFU); // Rectangle magenta
+lcd.fillRect(30, 70, 60, 30, 0x00FFFFU); // Rectangle cyan rempli</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>drawRoundRect() / fillRoundRect()</h3>
+              <div class="method-signature">
+                void drawRoundRect(int32_t x, int32_t y, int32_t w, int32_t h,
+                int32_t r, uint32_t color) void fillRoundRect(int32_t x, int32_t
+                y, int32_t w, int32_t h, int32_t r, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawRoundRect(50, 50, 100, 40, 10, 0xFFA500U); // Rectangle arrondi orange
+lcd.fillRoundRect(60, 100, 80, 30, 15, 0x008000U); // Rectangle arrondi vert rempli</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>⚪ Cercles et Ellipses</h2>
+            <div class="method-card">
+              <h3>drawCircle() / fillCircle()</h3>
+              <div class="method-signature">
+                void drawCircle(int32_t x, int32_t y, int32_t r, uint32_t color)
+                void fillCircle(int32_t x, int32_t y, int32_t r, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawCircle(120, 80, 30, 0x800080U); // Cercle violet
+lcd.fillCircle(200, 120, 20, 0xFFD700U); // Cercle jaune rempli</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>drawEllipse() / fillEllipse()</h3>
+              <div class="method-signature">
+                void drawEllipse(int32_t x, int32_t y, int32_t rx, int32_t ry,
+                uint32_t color) void fillEllipse(int32_t x, int32_t y, int32_t
+                rx, int32_t ry, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawEllipse(100, 100, 40, 20, 0x00FF80U); // Ellipse verte
+lcd.fillEllipse(150, 150, 30, 10, 0xFF0080U); // Ellipse rose remplie</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🔺 Triangles</h2>
+            <div class="method-card">
+              <h3>drawTriangle() / fillTriangle()</h3>
+              <div class="method-signature">
+                void drawTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t
+                y1, int32_t x2, int32_t y2, uint32_t color) void
+                fillTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
+                int32_t x2, int32_t y2, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawTriangle(10, 10, 60, 10, 35, 50, 0x00FF00U); // Triangle vert
+lcd.fillTriangle(80, 80, 120, 80, 100, 120, 0xFF0000U); // Triangle rouge rempli</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🌀 Arcs et Béziers</h2>
+            <div class="method-card">
+              <h3>drawArc() / fillArc()</h3>
+              <div class="method-signature">
+                void drawArc(int32_t x, int32_t y, int32_t r0, int32_t r1, float
+                angle0, float angle1, uint32_t color) void fillArc(int32_t x,
+                int32_t y, int32_t r0, int32_t r1, float angle0, float angle1,
+                uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawArc(160, 100, 30, 40, 0, 180, 0x00FFFFU); // Arc cyan
+lcd.fillArc(200, 150, 20, 30, 45, 135, 0xFF00FFU); // Arc magenta rempli</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>drawBezier()</h3>
+              <div class="method-signature">
+                void drawBezier(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
+                int32_t x2, int32_t y2, uint32_t color) void drawBezier(int32_t
+                x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+                int32_t x3, int32_t y3, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.drawBezier(20, 120, 60, 80, 100, 120, 0xFF8000U); // Bézier orange
+lcd.drawBezier(50, 200, 80, 150, 120, 250, 160, 200, 0x0080FFU); // Bézier bleu à 4 points</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🌈 Gradients et Remplissages</h2>
+            <div class="method-card">
+              <h3>fillGradientRect()</h3>
+              <div class="method-signature">
+                void fillGradientRect(int32_t x, int32_t y, uint32_t w, uint32_t
+                h, uint32_t start, uint32_t end, fill_style_t style)
+              </div>
+              <pre><code class="language-cpp">lcd.fillGradientRect(10, 10, 200, 100, 0xFF0000U, 0x0000FFU, HORIZONTAL); // Dégradé horizontal rouge → bleu</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🧩 Autres Fonctions Utiles</h2>
+            <div class="method-card">
+              <h3>clear()</h3>
+              <div class="method-signature">
+                void clear(void) void clear(uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.clear(); // Efface avec la couleur de base
+lcd.clear(0xFFFFFFU); // Efface en blanc</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>setClipRect()</h3>
+              <div class="method-signature">
+                void setClipRect(int32_t x, int32_t y, int32_t w, int32_t h)
+              </div>
+              <pre><code class="language-cpp">lcd.setClipRect(50, 50, 100, 100); // Limite le dessin à une zone</code></pre>
+            </div>
+          </div>
+          <div class="card warning-box">
+            <h2>⚠️ Conseils et Pièges</h2>
+            <ul>
+              <li>
+                Utilisez <code>startWrite()</code> et
+                <code>endWrite()</code> pour accélérer les dessins multiples
+              </li>
+              <li>
+                Les coordonnées hors écran ne sont pas vérifiées automatiquement
+              </li>
+              <li>Pour les animations, privilégiez les sprites</li>
+              <li>
+                Les couleurs peuvent être passées en hexadécimal ou via
+                <code>color888()</code>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

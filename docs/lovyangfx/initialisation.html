@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Initialisation - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li>
+            <a href="initialisation.html" class="active">⚙️ Initialisation</a>
+          </li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+
+      <main class="content">
+        <header class="page-header">
+          <h1>⚙️ Initialisation de LovyanGFX</h1>
+          <p class="subtitle">Configuration et mise en place de votre écran</p>
+        </header>
+
+        <section>
+          <div class="card">
+            <h2>🚀 Méthode 1 : Auto-détection (Plus Simple)</h2>
+            <p>
+              Pour les cartes supportées officiellement (M5Stack, TTGO, etc.),
+              utilisez l'auto-détection.
+            </p>
+
+            <pre><code class="language-cpp">#define LGFX_AUTODETECT  // Active la détection automatique
+
+#include &lt;LovyanGFX.hpp&gt;
+
+static LGFX lcd;  // Instance principale
+
+void setup() {
+    lcd.init();                  // Initialiser (détecte automatiquement)
+    lcd.setRotation(1);          // Rotation: 0-7
+    lcd.setBrightness(200);      // Luminosité: 0-255
+    lcd.setColorDepth(16);       // Profondeur: 8, 16 ou 24
+    
+    lcd.fillScreen(0x000000U);   // Effacer en noir
+    lcd.setTextColor(0xFFFFFFU);
+    lcd.drawString("Bonjour!", 10, 10);
+}
+
+void loop() {
+    // Votre code ici
+}</code></pre>
+
+            <div class="info-box">
+              <h3>📋 Cartes Supportées en Auto-détection</h3>
+              <ul>
+                <li>M5Stack (Basic, Gray, Go, Fire)</li>
+                <li>M5Stack Core2, CoreInk, M5Paper</li>
+                <li>M5Stick C, M5Stick C Plus</li>
+                <li>M5Tough, M5AtomS3</li>
+                <li>TTGO T-Watch, T-Display</li>
+                <li>ESP-WROVER-KIT</li>
+                <li>ESP32-S3-BOX</li>
+                <li>WioTerminal (Seeed)</li>
+                <li>Et bien d'autres...</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🔧 Méthode 2 : Configuration Manuelle</h2>
+            <p>
+              Pour une configuration personnalisée, créez votre propre classe de
+              configuration.
+            </p>
+
+            <h3>Exemple Complet - Écran ILI9341 SPI</h3>
+            <pre><code class="language-cpp">#include &lt;LovyanGFX.hpp&gt;
+
+class LGFX : public lgfx::LGFX_Device
+{
+    lgfx::Panel_ILI9341 _panel_instance;
+    lgfx::Bus_SPI       _bus_instance;
+    lgfx::Light_PWM     _light_instance;
+    lgfx::Touch_XPT2046 _touch_instance;
+
+public:
+    LGFX(void)
+    {
+        // Configuration du bus SPI
+        {
+            auto cfg = _bus_instance.config();
+            cfg.spi_host = VSPI_HOST;  // ou HSPI_HOST
+            cfg.spi_mode = 0;
+            cfg.freq_write = 40000000; // 40MHz pour l'écriture
+            cfg.freq_read  = 16000000; // 16MHz pour la lecture
+            cfg.spi_3wire  = true;
+            cfg.use_lock   = true;
+            cfg.dma_channel = 1;
+            
+            // Pins SPI
+            cfg.pin_sclk = 18;  // CLK
+            cfg.pin_mosi = 23;  // MOSI
+            cfg.pin_miso = 19;  // MISO
+            cfg.pin_dc   = 27;  // D/C (Data/Command)
+            
+            _bus_instance.config(cfg);
+            _panel_instance.setBus(&_bus_instance);
+        }
+
+        // Configuration du panneau
+        {
+            auto cfg = _panel_instance.config();
+            
+            cfg.pin_cs   = 14;  // Chip Select
+            cfg.pin_rst  = 33;  // Reset
+            cfg.pin_busy = -1;  // Busy (non utilisé)
+            
+            cfg.memory_width  = 240;
+            cfg.memory_height = 320;
+            cfg.panel_width   = 240;
+            cfg.panel_height  = 320;
+            
+            cfg.offset_x = 0;
+            cfg.offset_y = 0;
+            cfg.offset_rotation = 0;
+            cfg.dummy_read_pixel = 8;
+            cfg.dummy_read_bits = 1;
+            cfg.readable = true;
+            cfg.invert = false;
+            cfg.rgb_order = false;
+            cfg.dlen_16bit = false;
+            cfg.bus_shared = true;
+            
+            _panel_instance.config(cfg);
+        }
+
+        // Configuration du rétroéclairage
+        {
+            auto cfg = _light_instance.config();
+            cfg.pin_bl = 32;     // Pin du rétroéclairage
+            cfg.invert = false;
+            cfg.freq   = 44100;
+            cfg.pwm_channel = 7;
+            
+            _light_instance.config(cfg);
+            _panel_instance.setLight(&_light_instance);
+        }
+
+        // Configuration tactile (optionnel)
+        {
+            auto cfg = _touch_instance.config();
+            cfg.x_min      = 0;
+            cfg.x_max      = 239;
+            cfg.y_min      = 0;
+            cfg.y_max      = 319;
+            cfg.pin_int    = 36;  // Pin d'interruption tactile
+            cfg.bus_shared = true;
+            cfg.offset_rotation = 0;
+            
+            // Pins SPI pour le tactile
+            cfg.spi_host = VSPI_HOST;
+            cfg.freq = 1000000;
+            cfg.pin_sclk = 18;
+            cfg.pin_mosi = 23;
+            cfg.pin_miso = 19;
+            cfg.pin_cs   = 21;
+            
+            _touch_instance.config(cfg);
+            _panel_instance.setTouch(&_touch_instance);
+        }
+
+        setPanel(&_panel_instance);
+    }
+};
+
+static LGFX lcd;
+
+void setup() {
+    lcd.init();
+    lcd.setRotation(1);
+    lcd.setBrightness(128);
+    lcd.fillScreen(TFT_BLACK);
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <h2>📱 Fonctions d'Initialisation Principales</h2>
+
+            <div class="method-card">
+              <h3>init() - Initialiser l'écran</h3>
+              <div class="method-signature">bool init(void)</div>
+              <p>
+                Initialise l'écran et prépare la communication. Doit être appelé
+                en premier.
+              </p>
+              <pre><code class="language-cpp">if (!lcd.init()) {
+    Serial.println("Échec d'initialisation!");
+    while(1);
+}
+Serial.println("Écran initialisé!");</code></pre>
+            </div>
+
+            <div class="method-card">
+              <h3>setRotation() - Orientation de l'écran</h3>
+              <div class="method-signature">
+                void setRotation(uint_fast8_t rotation)
+              </div>
+              <p>Définit l'orientation de l'affichage (0-7).</p>
+              <ul>
+                <li><code>0</code> : Portrait normal</li>
+                <li><code>1</code> : Paysage (rotation 90°)</li>
+                <li><code>2</code> : Portrait inversé (rotation 180°)</li>
+                <li><code>3</code> : Paysage inversé (rotation 270°)</li>
+                <li><code>4-7</code> : Comme 0-3 mais avec miroir vertical</li>
+              </ul>
+              <pre><code class="language-cpp">lcd.setRotation(1);  // Mode paysage
+int largeur = lcd.width();   // Obtenir largeur
+int hauteur = lcd.height();  // Obtenir hauteur</code></pre>
+            </div>
+
+            <div class="method-card">
+              <h3>setBrightness() - Luminosité</h3>
+              <div class="method-signature">
+                void setBrightness(uint8_t brightness)
+              </div>
+              <p>Règle la luminosité du rétroéclairage (0-255).</p>
+              <pre><code class="language-cpp">lcd.setBrightness(255);  // Maximum
+lcd.setBrightness(128);  // 50%
+lcd.setBrightness(0);    // Éteint (écran noir)</code></pre>
+            </div>
+
+            <div class="method-card">
+              <h3>setColorDepth() - Profondeur de couleur</h3>
+              <div class="method-signature">void setColorDepth(int bits)</div>
+              <p>Définit le nombre de bits par pixel.</p>
+              <pre><code class="language-cpp">lcd.setColorDepth(8);   // RGB332 - Rapide
+lcd.setColorDepth(16);  // RGB565 - Recommandé
+lcd.setColorDepth(24);  // RGB888 - Haute qualité</code></pre>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🖥️ Propriétés de l'Écran</h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Fonction</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>width()</code></td>
+                  <td>Retourne la largeur actuelle (selon rotation)</td>
+                </tr>
+                <tr>
+                  <td><code>height()</code></td>
+                  <td>Retourne la hauteur actuelle (selon rotation)</td>
+                </tr>
+                <tr>
+                  <td><code>getRotation()</code></td>
+                  <td>Retourne la rotation actuelle (0-7)</td>
+                </tr>
+                <tr>
+                  <td><code>getColorDepth()</code></td>
+                  <td>Retourne la profondeur de couleur</td>
+                </tr>
+                <tr>
+                  <td><code>isEPD()</code></td>
+                  <td>Retourne true si c'est un écran EPD (e-paper)</td>
+                </tr>
+                <tr>
+                  <td><code>isReadable()</code></td>
+                  <td>Retourne true si on peut lire les pixels</td>
+                </tr>
+                <tr>
+                  <td><code>isBusShared()</code></td>
+                  <td>Retourne true si le bus est partagé (SD, etc.)</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <pre><code class="language-cpp">Serial.printf("Écran: %d x %d\n", lcd.width(), lcd.height());
+Serial.printf("Rotation: %d\n", lcd.getRotation());
+Serial.printf("Profondeur: %d bits\n", lcd.getColorDepth());
+
+if (lcd.isEPD()) {
+    Serial.println("Écran e-paper détecté");
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <h2>🔄 Gestion du Bus de Communication</h2>
+
+            <div class="method-card">
+              <h3>startWrite() / endWrite()</h3>
+              <p>
+                Permet d'optimiser les performances en maintenant le bus SPI
+                actif.
+              </p>
+              <pre><code class="language-cpp">// Sans startWrite (lent - bus acquis à chaque appel)
+lcd.drawPixel(0, 0, RED);
+lcd.drawPixel(1, 1, GREEN);
+lcd.drawPixel(2, 2, BLUE);
+
+// Avec startWrite (rapide - bus acquis une fois)
+lcd.startWrite();
+lcd.drawPixel(0, 0, RED);
+lcd.drawPixel(1, 1, GREEN);
+lcd.drawPixel(2, 2, BLUE);
+lcd.endWrite();</code></pre>
+            </div>
+
+            <div class="method-card">
+              <h3>beginTransaction() / endTransaction()</h3>
+              <p>
+                Force la libération/acquisition du bus, même avec startWrite
+                actif.
+              </p>
+              <pre><code class="language-cpp">lcd.startWrite();
+lcd.drawRect(0, 0, 100, 100, RED);
+
+lcd.endTransaction();  // Libérer le bus
+// Utiliser SD card ou autre périphérique SPI
+File f = SD.open("/data.txt");
+// ...
+lcd.beginTransaction();  // Réacquérir le bus
+
+lcd.fillRect(50, 50, 100, 100, BLUE);
+lcd.endWrite();</code></pre>
+            </div>
+
+            <div class="warning-box">
+              <h3>⚠️ Important pour Bus Partagé</h3>
+              <p>
+                Si vous utilisez une carte SD ou d'autres périphériques SPI sur
+                le même bus :
+              </p>
+              <ul>
+                <li>
+                  Toujours appeler <code>endWrite()</code> avant d'accéder à la
+                  SD
+                </li>
+                <li>
+                  Ou utiliser <code>endTransaction()</code> temporairement
+                </li>
+                <li>
+                  Ne jamais accéder au bus partagé pendant un
+                  <code>startWrite()</code> actif
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>📄 Écrans e-Paper (EPD)</h2>
+            <p>
+              Les écrans à encre électronique nécessitent un traitement spécial.
+            </p>
+
+            <div class="method-card">
+              <h3>display() - Actualiser l'affichage</h3>
+              <div class="method-signature">
+                void display(void) void display(int32_t x, int32_t y, int32_t w,
+                int32_t h)
+              </div>
+              <p>
+                Actualise tout l'écran ou une zone spécifique (EPD uniquement).
+              </p>
+              <pre><code class="language-cpp">// Dessiner (pas encore visible sur EPD)
+lcd.fillRect(0, 0, 100, 100, BLACK);
+lcd.drawString("Test", 10, 10);
+
+// Actualiser l'écran (rend visible)
+lcd.display();
+
+// Ou actualiser une zone spécifique
+lcd.display(0, 0, 100, 120);  // Zone modifiée seulement</code></pre>
+            </div>
+
+            <div class="method-card">
+              <h3>waitDisplay() / displayBusy()</h3>
+              <pre><code class="language-cpp">lcd.display();        // Lancer la mise à jour
+lcd.waitDisplay();    // Attendre la fin
+
+// Ou vérifier l'état
+if (!lcd.displayBusy()) {
+    // Mise à jour terminée
+    lcd.fillRect(0, 0, 50, 50, BLACK);
+    lcd.display();
+}</code></pre>
+            </div>
+
+            <div class="method-card">
+              <h3>setAutoDisplay()</h3>
+              <div class="method-signature">
+                void setAutoDisplay(bool enable)
+              </div>
+              <p>
+                Active/désactive la mise à jour automatique après
+                <code>endWrite()</code>.
+              </p>
+              <pre><code class="language-cpp">lcd.setAutoDisplay(false);  // Désactiver auto-refresh
+
+lcd.startWrite();
+lcd.fillRect(0, 0, 100, 100, BLACK);
+lcd.drawString("Texte", 10, 10);
+lcd.endWrite();  // Pas de rafraîchissement
+
+lcd.display();  // Rafraîchir manuellement
+
+lcd.setAutoDisplay(true);  // Réactiver auto-refresh</code></pre>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🎮 Configuration Tactile</h2>
+            <p>Si votre écran possède une fonction tactile.</p>
+
+            <pre><code class="language-cpp">uint16_t touchX, touchY;
+
+void loop() {
+    // Vérifier si l'écran est touché
+    if (lcd.getTouch(&touchX, &touchY)) {
+        lcd.fillCircle(touchX, touchY, 5, RED);
+        Serial.printf("Touch: %d, %d\n", touchX, touchY);
+    }
+    
+    delay(10);
+}</code></pre>
+
+            <div class="info-box">
+              <h3>💡 Contrôleurs Tactiles Supportés</h3>
+              <ul>
+                <li>XPT2046 (SPI)</li>
+                <li>FT5x06, FT6236 (I2C)</li>
+                <li>GT911 (I2C)</li>
+                <li>CST816S (I2C)</li>
+                <li>STMPE610 (SPI)</li>
+                <li>NS2009 (I2C)</li>
+                <li>TT21xxx (I2C)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>⚡ Optimisations DMA</h2>
+
+            <div class="method-card">
+              <h3>initDMA() / waitDMA() / dmaBusy()</h3>
+              <p>Gestion du transfert DMA (Direct Memory Access).</p>
+              <pre><code class="language-cpp">lcd.initDMA();  // Initialiser le DMA (appelé automatiquement par init)
+
+// Lancer un transfert DMA asynchrone
+lcd.pushImageDMA(0, 0, width, height, imageData);
+
+// Faire autre chose pendant le transfert...
+doSomethingElse();
+
+// Attendre la fin du transfert
+lcd.waitDMA();
+
+// Ou vérifier l'état
+if (!lcd.dmaBusy()) {
+    // Transfert terminé
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🔍 Débogage et Diagnostic</h2>
+            <pre><code class="language-cpp">void diagnostiquer() {
+    Serial.println("=== Diagnostic LovyanGFX ===");
+    Serial.printf("Résolution: %d x %d\n", lcd.width(), lcd.height());
+    Serial.printf("Rotation: %d\n", lcd.getRotation());
+    Serial.printf("Profondeur couleur: %d bits\n", lcd.getColorDepth());
+    Serial.printf("Type écran EPD: %s\n", lcd.isEPD() ? "Oui" : "Non");
+    Serial.printf("Lecture pixels: %s\n", lcd.isReadable() ? "Oui" : "Non");
+    Serial.printf("Bus partagé: %s\n", lcd.isBusShared() ? "Oui" : "Non");
+    Serial.printf("Tactile: %s\n", lcd.touch() ? "Oui" : "Non");
+}
+
+void setup() {
+    Serial.begin(115200);
+    lcd.init();
+    diagnostiquer();
+}</code></pre>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

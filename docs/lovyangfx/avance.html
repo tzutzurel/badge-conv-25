@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fonctions Avancées - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li>
+            <a href="avance.html" class="active">🚀 Fonctions Avancées</a>
+          </li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+      <main class="content">
+        <header class="page-header">
+          <h1>🚀 Fonctions Avancées</h1>
+          <p class="subtitle">
+            Transformations, DMA, gestion du tactile, effets et plus
+          </p>
+        </header>
+        <section>
+          <div class="card">
+            <h2>🔄 Transformations Affines</h2>
+            <div class="method-card">
+              <h3>pushImageAffine()</h3>
+              <div class="method-signature">
+                void pushImageAffine(const float matrix[6], int32_t w, int32_t
+                h, const T* data)
+              </div>
+              <pre><code class="language-cpp">float mat[6] = {1, 0, 0, 0, 1, 0}; // Identité
+lcd.pushImageAffine(mat, 100, 100, imageData);</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>⚡ DMA (Direct Memory Access)</h2>
+            <div class="method-card">
+              <h3>initDMA(), pushImageDMA(), waitDMA(), dmaBusy()</h3>
+              <pre><code class="language-cpp">lcd.initDMA();
+lcd.pushImageDMA(0, 0, 320, 240, imageData);
+while (lcd.dmaBusy()) {
+    // Faire autre chose
+}
+lcd.waitDMA();</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🖐️ Gestion du Tactile</h2>
+            <div class="method-card">
+              <h3>getTouch()</h3>
+              <div class="method-signature">
+                bool getTouch(uint16_t* x, uint16_t* y)
+              </div>
+              <pre><code class="language-cpp">uint16_t tx, ty;
+if (lcd.getTouch(&tx, &ty)) {
+    lcd.fillCircle(tx, ty, 5, 0xFF0000U);
+}</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🎨 Effets et Fonctions Spéciales</h2>
+            <div class="method-card">
+              <h3>floodFill() / paint()</h3>
+              <div class="method-signature">
+                void floodFill(int32_t x, int32_t y, uint32_t color) void
+                paint(int32_t x, int32_t y, uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.floodFill(50, 50, 0x00FF00U); // Remplissage vert</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>setScrollRect()</h3>
+              <div class="method-signature">
+                void setScrollRect(int32_t x, int32_t y, int32_t w, int32_t h,
+                uint32_t color)
+              </div>
+              <pre><code class="language-cpp">lcd.setScrollRect(0, 0, 320, 240, 0x000000U);</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>scroll()</h3>
+              <div class="method-signature">
+                void scroll(int_fast16_t dx, int_fast16_t dy = 0)
+              </div>
+              <pre><code class="language-cpp">lcd.scroll(10, 0); // Décale l'affichage de 10 pixels à droite</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>📦 Lecture de Pixels</h2>
+            <div class="method-card">
+              <h3>readPixel()</h3>
+              <div class="method-signature">
+                uint16_t readPixel(int32_t x, int32_t y)
+              </div>
+              <pre><code class="language-cpp">uint16_t couleur = lcd.readPixel(10, 10);</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>readRect()</h3>
+              <div class="method-signature">
+                void readRect(int32_t x, int32_t y, int32_t w, int32_t h, T*
+                data)
+              </div>
+              <pre><code class="language-cpp">uint16_t buffer[100*100];
+lcd.readRect(0, 0, 100, 100, buffer);</code></pre>
+            </div>
+          </div>
+          <div class="card warning-box">
+            <h2>⚠️ Conseils et Pièges</h2>
+            <ul>
+              <li>Le DMA n'est pas disponible sur tous les écrans</li>
+              <li>La lecture de pixels peut être lente selon le panneau</li>
+              <li>Les effets floodFill/paint sont gourmands en calcul</li>
+              <li>Le tactile doit être calibré selon le panneau</li>
+            </ul>
+          </div>
+        </section>
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

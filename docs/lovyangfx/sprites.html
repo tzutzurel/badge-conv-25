@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprites (Offscreen) - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>LovyanGFX</h2>
+                <p class="version">Documentation API</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">🏠 Accueil</a></li>
+                <li><a href="introduction.html">📖 Introduction</a></li>
+                <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+                <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+                <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+                <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+                <li><a href="images.html">🖼️ Gestion des Images</a></li>
+                <li><a href="sprites.html" class="active">🎮 Sprites (Offscreen)</a></li>
+                <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+                <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <header class="page-header">
+                <h1>🎮 Sprites (Offscreen)</h1>
+                <p class="subtitle">Créer des buffers hors-écran pour animations et effets avancés</p>
+            </header>
+            <section>
+                <div class="card">
+                    <h2>🧩 Qu'est-ce qu'un Sprite ?</h2>
+                    <p>Un sprite est une zone mémoire (buffer) où vous pouvez dessiner hors écran, puis afficher le résultat d'un seul coup sur l'écran principal. Idéal pour les animations, effets, double-buffering.</p>
+                </div>
+                <div class="card">
+                    <h2>🛠️ Création et Configuration</h2>
+                    <div class="method-card">
+                        <h3>LGFX_Sprite</h3>
+                        <div class="method-signature">LGFX_Sprite sprite(&lcd);</div>
+                        <pre><code class="language-cpp">LGFX_Sprite sprite(&lcd);
+sprite.setColorDepth(16); // RGB565
+sprite.createSprite(100, 100); // Largeur, hauteur</code></pre>
+                    </div>
+                    <div class="method-card">
+                        <h3>deleteSprite()</h3>
+                        <div class="method-signature">void deleteSprite(void)</div>
+                        <pre><code class="language-cpp">sprite.deleteSprite(); // Libère la mémoire</code></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>🎨 Dessiner sur le Sprite</h2>
+                    <p>Utilisez toutes les fonctions de dessin comme sur l'écran principal :</p>
+                    <pre><code class="language-cpp">sprite.fillRect(0, 0, 100, 100, 0xFF0000U);
+sprite.drawCircle(50, 50, 30, 0x00FF00U);
+sprite.drawString("Hello", 10, 10);
+</code></pre>
+                </div>
+                <div class="card">
+                    <h2>📤 Afficher le Sprite sur l'Écran</h2>
+                    <div class="method-card">
+                        <h3>pushSprite()</h3>
+                        <div class="method-signature">void pushSprite(int32_t x, int32_t y)
+void pushSprite(&lcd, int32_t x, int32_t y)</div>
+                        <pre><code class="language-cpp">sprite.pushSprite(50, 50); // Affiche le sprite à la position (50,50)</ncode></pre>
+                    </div>
+                    <div class="method-card">
+                        <h3>pushRotateZoom()</h3>
+                        <div class="method-signature">void pushRotateZoom(int32_t x, int32_t y, float angle, float zoom_x, float zoom_y)</div>
+                        <pre><code class="language-cpp">sprite.pushRotateZoom(120, 80, 45.0f, 2.0f, 2.0f); // Rotation et zoom</code></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>🎨 Palette et Profondeur</h2>
+                    <div class="method-card">
+                        <h3>setColorDepth()</h3>
+                        <div class="method-signature">void setColorDepth(int bits)</div>
+                        <pre><code class="language-cpp">sprite.setColorDepth(8); // RGB332
+sprite.setColorDepth(16); // RGB565
+sprite.setColorDepth(24); // RGB888</code></pre>
+                    </div>
+                    <div class="method-card">
+                        <h3>setPaletteColor()</h3>
+                        <div class="method-signature">void setPaletteColor(uint8_t index, uint32_t color)</div>
+                        <pre><code class="language-cpp">sprite.setPaletteColor(1, 0xFF0000U); // Index 1 = rouge</code></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>⚡ Optimisation et Conseils</h2>
+                    <ul>
+                        <li>Les sprites consomment beaucoup de RAM (attention sur ESP32 !)</li>
+                        <li>Utilisez <code>deleteSprite()</code> pour libérer la mémoire après usage</li>
+                        <li>Les sprites permettent des animations fluides sans scintillement</li>
+                        <li>Utilisez <code>pushRotateZoom()</code> pour des effets avancés</li>
+                        <li>Les sprites peuvent être utilisés comme buffers pour des jeux, graphismes, etc.</li>
+                    </ul>
+                </div>
+                <div class="card warning-box">
+                    <h2>⚠️ Pièges à Éviter</h2>
+                    <ul>
+                        <li>Ne créez pas de sprites trop grands (ex: 320x240 en RGB565 = 150 Ko !)</li>
+                        <li>Libérez la mémoire avec <code>deleteSprite()</code> avant d'en créer un nouveau</li>
+                        <li>La profondeur de couleur doit être définie avant <code>createSprite()</code></li>
+                    </ul>
+                </div>
+            </section>
+            <footer class="page-footer">
+                <p>Documentation LovyanGFX | <a href="index.html">Retour à l'accueil</a></p>
+            </footer>
+        </main>
+    </div>
+        <script src="sidebar-sections.js"></script>
+</body>
+</html>

@@ -9,26 +9,7 @@
 #include "esp_random.h"
 #include "esp_log.h"
 #include "../Orbitron_Bold24pt7b.h"
-
-// Couleurs badge (similaire à l'ancien display_manager)
-static uint16_t colBackground = 0;
-static uint16_t colCyan = 0;
-static uint16_t colYellow = 0;
-static uint16_t colPink = 0;
-static uint16_t colMagenta = 0;
-
-// Utilitaire pour initialiser les couleurs une seule fois
-static void initColors(LGFX &display)
-{
-    if (colBackground == 0)
-    {
-        colBackground = display.color565(10, 0, 30);
-        colCyan = display.color565(0, 255, 255);
-        colYellow = display.color565(255, 255, 0);
-        colPink = display.color565(255, 20, 220);
-        colMagenta = display.color565(255, 64, 255);
-    }
-}
+#include "retro_colors.h"
 
 ViewBadge::ViewBadge(AppState &state, LGFX &lcd)
     : m_state(state), m_lcd(lcd)

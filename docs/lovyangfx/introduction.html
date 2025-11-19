@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li>
+            <a href="introduction.html" class="active">📖 Introduction</a>
+          </li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+
+      <main class="content">
+        <header class="page-header">
+          <h1>📖 Introduction à LovyanGFX</h1>
+          <p class="subtitle">Comprendre les concepts fondamentaux</p>
+        </header>
+
+        <section class="intro-section">
+          <div class="card">
+            <h2>🎯 Qu'est-ce que LovyanGFX ?</h2>
+            <p>
+              LovyanGFX est une bibliothèque graphique moderne conçue pour les
+              systèmes embarqués, principalement les microcontrôleurs ESP32 et
+              compatibles. Elle offre une API riche et intuitive pour contrôler
+              des écrans LCD, OLED et EPD (papier électronique).
+            </p>
+
+            <h3>Avantages par rapport aux autres bibliothèques</h3>
+            <ul>
+              <li>
+                <strong>Performance supérieure</strong> : Utilisation optimisée
+                du DMA et des périphériques matériels
+              </li>
+              <li>
+                <strong>Support ESP-IDF</strong> : Compatible ArduinoESP32 ET
+                ESP-IDF
+              </li>
+              <li>
+                <strong>Modes couleur multiples</strong> : Support 16 bits ET 24
+                bits
+              </li>
+              <li>
+                <strong>Traitement parallèle</strong> : Exécution d'autres
+                tâches pendant le transfert DMA
+              </li>
+              <li>
+                <strong>Sprites avancés</strong> : Rotation et zoom rapides des
+                buffers off-screen
+              </li>
+              <li>
+                <strong>Multi-écrans</strong> : Utilisation simultanée de
+                plusieurs écrans
+              </li>
+              <li>
+                <strong>Réduction automatique</strong> : Gestion intelligente
+                des écrans monochromes
+              </li>
+              <li>
+                <strong>Portabilité PC</strong> : Test sur PC avec OpenCV/SDL2
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>🏗️ Architecture de la Bibliothèque</h2>
+            <p>LovyanGFX est organisé en couches logiques :</p>
+
+            <div class="method-card">
+              <h3>Couche Panel (Panneau)</h3>
+              <p>
+                Gère la communication bas niveau avec l'écran physique. Supporte
+                différents types de panneaux :
+              </p>
+              <ul>
+                <li>ILI9341, ILI9342, ILI9481, ILI9486, ILI9488</li>
+                <li>ST7735, ST7789, ST7796</li>
+                <li>SSD1306, SSD1327, SSD1331, SSD1351</li>
+                <li>GC9A01, GC9107</li>
+                <li>IT8951 (M5Paper)</li>
+                <li>Et bien d'autres...</li>
+              </ul>
+            </div>
+
+            <div class="method-card">
+              <h3>Couche Bus (Communication)</h3>
+              <p>Gère les protocoles de communication :</p>
+              <ul>
+                <li>
+                  <strong>SPI</strong> : Communication série rapide (mode HW ou
+                  SW)
+                </li>
+                <li>
+                  <strong>I2C</strong> : Communication série avec adressage
+                  (mode HW ou SW)
+                </li>
+                <li>
+                  <strong>Parallel 8-bit</strong> : Interface parallèle 8 bits
+                  (I2S sur ESP32)
+                </li>
+                <li>
+                  <strong>Parallel 16-bit</strong> : Interface parallèle 16 bits
+                  (ESP32-S2/S3)
+                </li>
+                <li><strong>RGB</strong> : Interface RGB direct (ESP32-S3)</li>
+              </ul>
+            </div>
+
+            <div class="method-card">
+              <h3>Couche LGFX (Interface Graphique)</h3>
+              <p>API de haut niveau pour dessiner sur l'écran :</p>
+              <ul>
+                <li>Formes géométriques (lignes, rectangles, cercles...)</li>
+                <li>Texte avec différentes polices</li>
+                <li>Images (BMP, JPG, PNG, QOI)</li>
+                <li>Sprites et transformations</li>
+                <li>Gestion des couleurs et palettes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>📦 Structure des Objets Principaux</h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Classe</th>
+                  <th>Description</th>
+                  <th>Usage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>LGFX</code></td>
+                  <td>Instance principale de l'écran</td>
+                  <td>Dessiner directement sur l'écran physique</td>
+                </tr>
+                <tr>
+                  <td><code>LGFX_Sprite</code></td>
+                  <td>Buffer hors-écran (sprite)</td>
+                  <td>Créer des animations et transformations</td>
+                </tr>
+                <tr>
+                  <td><code>Panel_*</code></td>
+                  <td>Configuration du panneau d'écran</td>
+                  <td>Définir les paramètres hardware</td>
+                </tr>
+                <tr>
+                  <td><code>Bus_*</code></td>
+                  <td>Configuration du bus de communication</td>
+                  <td>Définir les pins et paramètres de com</td>
+                </tr>
+                <tr>
+                  <td><code>Light_*</code></td>
+                  <td>Contrôle du rétroéclairage</td>
+                  <td>Gérer la luminosité</td>
+                </tr>
+                <tr>
+                  <td><code>Touch_*</code></td>
+                  <td>Gestion de l'écran tactile</td>
+                  <td>Détecter les touches utilisateur</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>🎨 Système de Couleurs</h2>
+            <p>LovyanGFX supporte trois formats de couleur principaux :</p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Format</th>
+                  <th>Bits</th>
+                  <th>Couleurs</th>
+                  <th>Usage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>RGB332</code></td>
+                  <td>8 bits</td>
+                  <td>256 couleurs</td>
+                  <td>Économie de mémoire, écrans simples</td>
+                </tr>
+                <tr>
+                  <td><code>RGB565</code></td>
+                  <td>16 bits</td>
+                  <td>65 536 couleurs</td>
+                  <td>Bon compromis vitesse/qualité</td>
+                </tr>
+                <tr>
+                  <td><code>RGB888</code></td>
+                  <td>24 bits</td>
+                  <td>16,7 millions</td>
+                  <td>Meilleure qualité, plus de mémoire</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="info-box" style="margin-top: 1.5rem">
+              <h3>💡 Conseil</h3>
+              <p>
+                Utilisez <code>RGB565</code> pour la plupart des applications.
+                C'est le meilleur compromis entre qualité visuelle, vitesse de
+                transfert et consommation mémoire. Passez à
+                <code>RGB888</code> uniquement si vous avez besoin de dégradés
+                très fins ou de photos haute qualité.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>⚡ Optimisation des Performances</h2>
+
+            <h3>1. Utiliser startWrite() / endWrite()</h3>
+            <pre><code class="language-cpp">// ❌ Lent : Acquisition/libération du bus à chaque appel
+lcd.drawPixel(0, 0, 0xFF0000);
+lcd.drawPixel(1, 1, 0x00FF00);
+lcd.drawPixel(2, 2, 0x0000FF);
+
+// ✅ Rapide : Bus acquis une seule fois
+lcd.startWrite();
+lcd.drawPixel(0, 0, 0xFF0000);
+lcd.drawPixel(1, 1, 0x00FF00);
+lcd.drawPixel(2, 2, 0x0000FF);
+lcd.endWrite();</code></pre>
+
+            <h3>2. Utiliser les fonctions write~()</h3>
+            <pre><code class="language-cpp">// Pour les boucles intensives
+lcd.startWrite();
+for (int x = 0; x < 100; x++) {
+    for (int y = 0; y < 100; y++) {
+        lcd.writePixel(x, y, color); // Plus rapide que drawPixel
+    }
+}
+lcd.endWrite();</code></pre>
+
+            <h3>3. Utiliser des Sprites pour les animations</h3>
+            <pre><code class="language-cpp">// Préparer l'image dans un sprite
+sprite.fillRect(0, 0, 50, 50, RED);
+sprite.fillCircle(25, 25, 20, BLUE);
+
+// Afficher avec rotation/zoom (très rapide)
+sprite.pushRotateZoom(x, y, angle, zoom, zoom);</code></pre>
+
+            <h3>4. DMA pour les gros transferts</h3>
+            <pre><code class="language-cpp">// Transfert DMA asynchrone (ne bloque pas le CPU)
+lcd.pushImageDMA(0, 0, width, height, imageData);</code></pre>
+          </div>
+
+          <div class="card warning-box">
+            <h2>⚠️ Points d'Attention</h2>
+            <ul>
+              <li>
+                <strong>Gestion de la mémoire</strong> : Les sprites consomment
+                de la RAM. Un sprite 320x240 en RGB565 utilise 150 Ko !
+              </li>
+              <li>
+                <strong>Bus SPI partagé</strong> : Si vous utilisez une carte SD
+                sur le même bus SPI, libérez toujours le bus avec
+                <code>endWrite()</code> avant d'accéder à la SD
+              </li>
+              <li>
+                <strong>Écrans EPD</strong> : Les papiers électroniques
+                nécessitent <code>endWrite()</code> ou
+                <code>display()</code> pour actualiser l'affichage
+              </li>
+              <li>
+                <strong>Multithread</strong> : LovyanGFX n'est pas thread-safe
+                par défaut. Utilisez des mutex si nécessaire
+              </li>
+              <li>
+                <strong>Débordement</strong> : Les fonctions de dessin ne
+                vérifient pas automatiquement les limites. Utilisez
+                <code>setClipRect()</code> pour définir une zone de dessin
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>🔄 Flux de Travail Typique</h2>
+            <ol style="line-height: 2">
+              <li>
+                <strong>Initialisation</strong> : Créer et configurer l'instance
+                LGFX
+              </li>
+              <li>
+                <strong>Configuration</strong> : Définir rotation, luminosité,
+                profondeur couleur
+              </li>
+              <li>
+                <strong>Dessin</strong> : Utiliser les fonctions de dessin
+              </li>
+              <li>
+                <strong>Actualisation</strong> : Appeler
+                <code>display()</code> si nécessaire (EPD)
+              </li>
+              <li><strong>Boucle</strong> : Répéter les étapes 3-4</li>
+            </ol>
+
+            <pre><code class="language-cpp">#include &lt;LovyanGFX.hpp&gt;
+
+static LGFX lcd;
+
+void setup() {
+    // 1. Initialisation
+    lcd.init();
+    
+    // 2. Configuration
+    lcd.setRotation(1);
+    lcd.setBrightness(200);
+    lcd.setColorDepth(16);
+    
+    // 3. Dessin initial
+    lcd.fillScreen(BLACK);
+    lcd.setTextColor(WHITE);
+    lcd.drawString("Prêt!", 10, 10);
+}
+
+void loop() {
+    // 4. Animation
+    lcd.startWrite();
+    // ... dessiner ici ...
+    lcd.endWrite();
+    
+    delay(16); // ~60 FPS
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <h2>📚 Prochaines Étapes</h2>
+            <p>
+              Maintenant que vous comprenez les bases, explorez les sections
+              suivantes :
+            </p>
+            <ul>
+              <li>
+                <a href="initialisation.html">⚙️ Initialisation</a> : Comment
+                configurer votre écran
+              </li>
+              <li>
+                <a href="couleurs.html">🎨 Gestion des Couleurs</a> : Travailler
+                avec les couleurs
+              </li>
+              <li>
+                <a href="formes.html">📐 Dessiner des Formes</a> : API de dessin
+              </li>
+              <li>
+                <a href="exemples.html">💡 Exemples Pratiques</a> : Code complet
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exemples Pratiques - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li>
+            <a href="exemples.html" class="active">💡 Exemples Pratiques</a>
+          </li>
+        </ul>
+      </nav>
+      <main class="content">
+        <header class="page-header">
+          <h1>💡 Exemples Pratiques</h1>
+          <p class="subtitle">
+            Code complet pour démarrer rapidement avec LovyanGFX
+          </p>
+        </header>
+        <section>
+          <div class="card">
+            <h2>🎨 Exemple 1 : Dessin de Formes</h2>
+            <pre><code class="language-cpp">#include &lt;LovyanGFX.hpp&gt;
+
+static LGFX lcd;
+
+void setup() {
+    lcd.init();
+    lcd.setRotation(1);
+    lcd.fillScreen(0x000000U);
+    lcd.drawRect(10, 10, 100, 50, 0xFF0000U);
+    lcd.fillCircle(60, 60, 30, 0x00FF00U);
+    lcd.drawLine(0, 0, 120, 120, 0x0000FFU);
+}
+
+void loop() {}
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>✍️ Exemple 2 : Affichage de Texte</h2>
+            <pre><code class="language-cpp">lcd.setFont(&fonts::Font2);
+lcd.setTextColor(0xFFFFFFU, 0x0000FFU);
+lcd.drawString("Bonjour !", 40, 40);
+lcd.drawNumber(2025, 40, 80);
+lcd.drawFloat(3.14159, 2, 40, 120);
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>🖼️ Exemple 3 : Affichage d'une Image BMP</h2>
+            <pre><code class="language-cpp">lcd.drawBmpFile("/images/logo.bmp", 0, 0);
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>🎮 Exemple 4 : Animation avec Sprite</h2>
+            <pre><code class="language-cpp">LGFX_Sprite sprite(&lcd);
+sprite.setColorDepth(16);
+sprite.createSprite(64, 64);
+
+void loop() {
+    sprite.fillScreen(0x000000U);
+    sprite.drawCircle(32, 32, 30, 0xFF0000U);
+    sprite.pushSprite(100, 100);
+    delay(16); // ~60 FPS
+}
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>🖐️ Exemple 5 : Tactile</h2>
+            <pre><code class="language-cpp">uint16_t tx, ty;
+if (lcd.getTouch(&tx, &ty)) {
+    lcd.fillCircle(tx, ty, 5, 0x00FF00U);
+}
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>🚀 Exemple 6 : DMA et Affichage Asynchrone</h2>
+            <pre><code class="language-cpp">lcd.initDMA();
+lcd.pushImageDMA(0, 0, 320, 240, imageData);
+while (lcd.dmaBusy()) {
+    // Faire autre chose
+}
+lcd.waitDMA();
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>🌈 Exemple 7 : Dégradé de Couleurs</h2>
+            <pre><code class="language-cpp">lcd.fillGradientRect(0, 0, 320, 100, 0xFF0000U, 0x0000FFU, HORIZONTAL);
+</code></pre>
+          </div>
+          <div class="card">
+            <h2>🧩 Exemple 8 : Palette Sprite</h2>
+            <pre><code class="language-cpp">LGFX_Sprite sprite(&lcd);
+sprite.setColorDepth(4);
+sprite.createSprite(100, 100);
+sprite.setPaletteColor(0, 0x000000U);
+sprite.setPaletteColor(1, 0xFF0000U);
+sprite.fillRect(0, 0, 50, 50, 1);
+sprite.pushSprite(10, 10);
+</code></pre>
+          </div>
+        </section>
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

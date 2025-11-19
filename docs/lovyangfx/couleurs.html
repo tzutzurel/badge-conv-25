@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Couleurs - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>LovyanGFX</h2>
+                <p class="version">Documentation API</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">🏠 Accueil</a></li>
+                <li><a href="introduction.html">📖 Introduction</a></li>
+                <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+                <li><a href="couleurs.html" class="active">🎨 Gestion des Couleurs</a></li>
+                <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+                <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+                <li><a href="images.html">🖼️ Gestion des Images</a></li>
+                <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+                <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+                <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <header class="page-header">
+                <h1>🎨 Gestion des Couleurs</h1>
+                <p class="subtitle">Comprendre et utiliser les formats de couleur</p>
+            </header>
+
+            <section>
+                <div class="card">
+                    <h2>📊 Formats de Couleur Supportés</h2>
+                    
+                    <h3>RGB332 (8 bits - 256 couleurs)</h3>
+                    <div class="method-card">
+                        <div class="method-signature">uint8_t color332(uint8_t r, uint8_t g, uint8_t b)</div>
+                        <p><strong>Description</strong> : Crée un code couleur 8 bits avec 3 bits pour le rouge, 3 bits pour le vert et 2 bits pour le bleu.</p>
+                        <ul>
+                            <li>Rouge : 0-255 (converti en 3 bits : 0-7)</li>
+                            <li>Vert : 0-255 (converti en 3 bits : 0-7)</li>
+                            <li>Bleu : 0-255 (converti en 2 bits : 0-3)</li>
+                        </ul>
+                        <pre><code class="language-cpp">// Exemples RGB332
+uint8_t rouge = lcd.color332(255, 0, 0);    // 0xE0
+uint8_t vert  = lcd.color332(0, 255, 0);    // 0x1C
+uint8_t bleu  = lcd.color332(0, 0, 255);    // 0x03
+uint8_t blanc = lcd.color332(255, 255, 255); // 0xFF
+uint8_t noir  = lcd.color332(0, 0, 0);      // 0x00</code></pre>
+                    </div>
+
+                    <h3>RGB565 (16 bits - 65536 couleurs)</h3>
+                    <div class="method-card">
+                        <div class="method-signature">uint16_t color565(uint8_t r, uint8_t g, uint8_t b)</div>
+                        <p><strong>Description</strong> : Crée un code couleur 16 bits avec 5 bits pour le rouge, 6 bits pour le vert et 5 bits pour le bleu.</p>
+                        <ul>
+                            <li>Rouge : 0-255 (converti en 5 bits : 0-31)</li>
+                            <li>Vert : 0-255 (converti en 6 bits : 0-63)</li>
+                            <li>Bleu : 0-255 (converti en 5 bits : 0-31)</li>
+                        </ul>
+                        <pre><code class="language-cpp">// Exemples RGB565
+uint16_t rouge = lcd.color565(255, 0, 0);    // 0xF800
+uint16_t vert  = lcd.color565(0, 255, 0);    // 0x07E0
+uint16_t bleu  = lcd.color565(0, 0, 255);    // 0x001F
+uint16_t blanc = lcd.color565(255, 255, 255); // 0xFFFF
+uint16_t noir  = lcd.color565(0, 0, 0);      // 0x0000
+
+// Couleurs personnalisées
+uint16_t orange = lcd.color565(255, 165, 0);
+uint16_t violet = lcd.color565(138, 43, 226);</code></pre>
+                    </div>
+
+                    <h3>RGB888 (24 bits - 16.7 millions de couleurs)</h3>
+                    <div class="method-card">
+                        <div class="method-signature">uint32_t color888(uint8_t r, uint8_t g, uint8_t b)</div>
+                        <p><strong>Description</strong> : Crée un code couleur 24 bits avec 8 bits pour chaque composante (recommandé).</p>
+                        <ul>
+                            <li>Rouge : 0-255 (8 bits complets)</li>
+                            <li>Vert : 0-255 (8 bits complets)</li>
+                            <li>Bleu : 0-255 (8 bits complets)</li>
+                        </ul>
+                        <pre><code class="language-cpp">// Exemples RGB888 (recommandé)
+uint32_t rouge = lcd.color888(255, 0, 0);      // 0xFF0000
+uint32_t vert  = lcd.color888(0, 255, 0);      // 0x00FF00
+uint32_t bleu  = lcd.color888(0, 0, 255);      // 0x0000FF
+uint32_t blanc = lcd.color888(255, 255, 255);  // 0xFFFFFF
+uint32_t noir  = lcd.color888(0, 0, 0);        // 0x000000
+
+// Notation hexadécimale directe
+lcd.fillRect(0, 0, 100, 50, 0xFF5733U); // Orange
+lcd.drawCircle(50, 50, 20, 0x3498DBU); // Bleu ciel</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🔄 Conversions de Couleurs</h2>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fonction</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>color16to8(rgb565)</code></td>
+                                <td>Convertit RGB565 → RGB332</td>
+                            </tr>
+                            <tr>
+                                <td><code>color8to16(rgb332)</code></td>
+                                <td>Convertit RGB332 → RGB565</td>
+                            </tr>
+                            <tr>
+                                <td><code>color16to24(rgb565)</code></td>
+                                <td>Convertit RGB565 → RGB888</td>
+                            </tr>
+                            <tr>
+                                <td><code>color24to16(rgb888)</code></td>
+                                <td>Convertit RGB888 → RGB565</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <pre><code class="language-cpp">// Conversions
+uint16_t couleur16 = 0xF800; // Rouge en RGB565
+uint8_t  couleur8  = lcd.color16to8(couleur16);   // Convertir en RGB332
+uint32_t couleur24 = lcd.color16to24(couleur16);  // Convertir en RGB888
+
+// Exemple pratique
+uint32_t couleurHaute = 0x3498DBU;
+uint16_t couleurBasse = lcd.color24to16(couleurHaute);
+lcd.fillRect(0, 0, 100, 100, couleurBasse);</code></pre>
+                </div>
+
+                <div class="card">
+                    <h2>🎯 Définir la Couleur de Dessin</h2>
+                    
+                    <div class="method-card">
+                        <h3>setColor() - Définir la couleur active</h3>
+                        <div class="method-signature">void setColor(uint32_t color)
+void setColor(uint8_t r, uint8_t g, uint8_t b)</div>
+                        <p>Définit la couleur qui sera utilisée par les fonctions de dessin suivantes.</p>
+                        <pre><code class="language-cpp">// Méthode 1 : Définir la couleur puis dessiner
+lcd.setColor(0xFF0000U);  // Rouge
+lcd.fillRect(0, 0, 50, 50);
+lcd.fillCircle(100, 100, 25);
+
+// Méthode 2 : RGB direct
+lcd.setColor(255, 128, 0);  // Orange
+lcd.drawRect(10, 10, 100, 100);
+
+// Méthode 3 : Couleur à chaque appel (plus lent)
+lcd.fillRect(0, 0, 50, 50, 0xFF0000U);
+lcd.fillCircle(100, 100, 25, 0x00FF00U);</code></pre>
+                    </div>
+
+                    <div class="method-card">
+                        <h3>setBaseColor() - Couleur de fond</h3>
+                        <div class="method-signature">void setBaseColor(uint32_t color)</div>
+                        <p>Définit la couleur de base utilisée pour <code>clear()</code> et le remplissage des zones de défilement.</p>
+                        <pre><code class="language-cpp">lcd.setBaseColor(0x000000U);  // Noir
+lcd.clear();  // Efface en noir
+
+lcd.setBaseColor(0xFFFFFFU);  // Blanc
+lcd.clear();  // Efface en blanc</code></pre>
+                    </div>
+
+                    <div class="method-card">
+                        <h3>getRawColor() / setRawColor()</h3>
+                        <div class="method-signature">uint32_t getRawColor(void)
+void setRawColor(uint32_t c)</div>
+                        <p>Obtient ou définit la couleur brute (format interne, selon la profondeur de couleur actuelle).</p>
+                        <pre><code class="language-cpp">// Sauvegarder et restaurer une couleur
+uint32_t couleurSauvee = lcd.getRawColor();
+lcd.setColor(0xFF0000U);
+// ... dessin ...
+lcd.setRawColor(couleurSauvee);  // Restaurer</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🎨 Profondeur de Couleur</h2>
+                    
+                    <div class="method-card">
+                        <h3>setColorDepth() - Définir la profondeur</h3>
+                        <div class="method-signature">void setColorDepth(int bits)
+void setColorDepth(color_depth_t depth)</div>
+                        <p>Définit le nombre de bits par pixel. Affecte la qualité et la vitesse.</p>
+                        <pre><code class="language-cpp">// 8 bits - Rapide mais qualité limitée
+lcd.setColorDepth(8);   // RGB332
+
+// 16 bits - Bon compromis (RECOMMANDÉ)
+lcd.setColorDepth(16);  // RGB565
+
+// 24 bits - Meilleure qualité mais plus lent
+lcd.setColorDepth(24);  // RGB888</code></pre>
+                        
+                        <div class="info-box">
+                            <h3>💡 Impact de la Profondeur</h3>
+                            <ul>
+                                <li><strong>8 bits</strong> : Transfert 3x plus rapide que 24 bits, mais couleurs limitées</li>
+                                <li><strong>16 bits</strong> : Meilleur équilibre vitesse/qualité pour la plupart des usages</li>
+                                <li><strong>24 bits</strong> : Qualité maximale, nécessaire pour photos et dégradés fins</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <h3>getColorDepth() - Obtenir la profondeur actuelle</h3>
+                        <div class="method-signature">color_depth_t getColorDepth(void)</div>
+                        <pre><code class="language-cpp">auto profondeur = lcd.getColorDepth();
+if (profondeur == 16) {
+    Serial.println("Mode RGB565");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🌈 Gradients de Couleurs</h2>
+                    
+                    <div class="method-card">
+                        <h3>Dessiner des lignes avec dégradé</h3>
+                        <pre><code class="language-cpp">// Ligne horizontale avec dégradé rouge → bleu
+lcd.drawGradientHLine(0, 100, 200, 0xFF0000U, 0x0000FFU);
+
+// Ligne verticale avec dégradé vert → jaune
+lcd.drawGradientVLine(100, 0, 200, 0x00FF00U, 0xFFFF00U);
+
+// Ligne diagonale avec dégradé
+lcd.drawGradientLine(0, 0, 200, 200, 0xFF00FFU, 0x00FFFFU);</code></pre>
+                    </div>
+
+                    <div class="method-card">
+                        <h3>Rectangle avec dégradé</h3>
+                        <pre><code class="language-cpp">// Dégradé radial (du centre vers l'extérieur)
+lcd.fillGradientRect(50, 50, 200, 150, 0xFFFFFFU, 0x000000U, RADIAL);
+
+// Dégradé horizontal
+lcd.fillGradientRect(50, 50, 200, 150, 0xFF0000U, 0x0000FFU, HORIZONTAL);
+
+// Dégradé vertical
+lcd.fillGradientRect(50, 50, 200, 150, 0x00FF00U, 0xFFFF00U, VERTICAL);</code></pre>
+                    </div>
+
+                    <div class="method-card">
+                        <h3>Créer un palette de dégradé personnalisé</h3>
+                        <pre><code class="language-cpp">// Définir une palette de couleurs
+rgb888_t palette[] = {
+    {255, 0, 0},    // Rouge
+    {255, 165, 0},  // Orange
+    {255, 255, 0},  // Jaune
+    {0, 255, 0},    // Vert
+    {0, 0, 255}     // Bleu
+};
+
+auto gradient = lcd.createGradient(palette);
+
+// Utiliser le dégradé
+lcd.drawGradientLine(0, 120, 320, 120, gradient);
+lcd.fillGradientRect(0, 0, 320, 100, gradient, HORIZONTAL);</code></pre>
+                    </div>
+
+                    <div class="method-card">
+                        <h3>Mapper une valeur sur un dégradé</h3>
+                        <pre><code class="language-cpp">// Créer un dégradé température
+rgb888_t tempColors[] = {
+    {0, 0, 255},     // Froid (bleu)
+    {0, 255, 255},   // Frais (cyan)
+    {0, 255, 0},     // Normal (vert)
+    {255, 255, 0},   // Tiède (jaune)
+    {255, 0, 0}      // Chaud (rouge)
+};
+auto tempGradient = lcd.createGradient(tempColors);
+
+// Afficher une température (0-100°C)
+float temperature = 75.5;
+uint32_t couleur = lcd.mapGradient<uint32_t>(
+    temperature, 0.0f, 100.0f, tempGradient
+);
+
+lcd.setColor(couleur);
+lcd.fillRect(10, 10, 50, 50);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📖 Palette de Couleurs (Mode Index)</h2>
+                    <p>Pour les sprites en mode 1, 2, 4 ou 8 bits avec palette.</p>
+                    
+                    <div class="method-card">
+                        <h3>setPaletteColor() - Définir une couleur de palette</h3>
+                        <div class="method-signature">void setPaletteColor(uint8_t index, uint32_t color)</div>
+                        <pre><code class="language-cpp">// Créer un sprite avec palette 4 bits (16 couleurs)
+LGFX_Sprite sprite(&lcd);
+sprite.setColorDepth(4);
+sprite.createSprite(100, 100);
+
+// Définir les couleurs de la palette
+sprite.setPaletteColor(0, 0x000000U);  // Index 0 = Noir
+sprite.setPaletteColor(1, 0xFF0000U);  // Index 1 = Rouge
+sprite.setPaletteColor(2, 0x00FF00U);  // Index 2 = Vert
+sprite.setPaletteColor(3, 0x0000FFU);  // Index 3 = Bleu
+sprite.setPaletteColor(4, 0xFFFF00U);  // Index 4 = Jaune
+
+// Dessiner en utilisant les index
+sprite.fillRect(0, 0, 50, 50, 1);   // Rouge
+sprite.fillCircle(50, 50, 25, 3);   // Bleu</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h3>💡 Avantages des Palettes</h3>
+                        <ul>
+                            <li>Économie mémoire importante (4 bits = 16 couleurs, utilise 16x moins de RAM)</li>
+                            <li>Changement de couleurs rapide (modifier la palette change tout le sprite)</li>
+                            <li>Idéal pour sprites de jeux, icônes, animations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🎨 Couleurs Prédéfinies Utiles</h2>
+                    <pre><code class="language-cpp">// Couleurs de base en hexadécimal (RGB888)
+#define NOIR      0x000000U
+#define BLANC     0xFFFFFFU
+#define ROUGE     0xFF0000U
+#define VERT      0x00FF00U
+#define BLEU      0x0000FFU
+#define JAUNE     0xFFFF00U
+#define CYAN      0x00FFFFU
+#define MAGENTA   0xFF00FFU
+#define ORANGE    0xFF8000U
+#define VIOLET    0x8000FFU
+#define ROSE      0xFF0080U
+
+// Nuances de gris
+#define GRIS_FONCE  0x404040U
+#define GRIS        0x808080U
+#define GRIS_CLAIR  0xC0C0C0U
+
+// Utilisation
+lcd.fillScreen(NOIR);
+lcd.setTextColor(BLANC);
+lcd.drawRect(10, 10, 100, 100, ROUGE);</code></pre>
+                </div>
+
+                <div class="card warning-box">
+                    <h2>⚠️ Pièges à Éviter</h2>
+                    <ul>
+                        <li><strong>Utiliser le bon suffixe</strong> : <code>0xFF0000U</code> (avec U) pour uint32_t, sinon c'est traité comme int32_t (RGB565)</li>
+                        <li><strong>Économiser avec color888()</strong> : Privilégiez <code>lcd.color888(r,g,b)</code> pour éviter les pertes de précision</li>
+                        <li><strong>Attention aux conversions</strong> : RGB565 perd de l'information. Ne pas faire trop de conversions aller-retour</li>
+                        <li><strong>Profondeur cohérente</strong> : Définir <code>setColorDepth()</code> avant <code>init()</code> pour certains panneaux</li>
+                    </ul>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                <p>Documentation LovyanGFX | <a href="index.html">Retour à l'accueil</a></p>
+            </footer>
+        </main>
+    </div>
+        <script src="sidebar-sections.js"></script>
+</body>
+</html>

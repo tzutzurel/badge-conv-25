@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Affichage de Texte - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html" class="active">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+      <main class="content">
+        <header class="page-header">
+          <h1>✍️ Affichage de Texte</h1>
+          <p class="subtitle">
+            API pour afficher du texte, gérer les polices, styles et encodages
+          </p>
+        </header>
+        <section>
+          <div class="card">
+            <h2>📝 Afficher du Texte</h2>
+            <div class="method-card">
+              <h3>print() / println()</h3>
+              <div class="method-signature">
+                size_t print(const char str[]) size_t println(const char str[])
+              </div>
+              <pre><code class="language-cpp">lcd.setCursor(10, 10);
+lcd.setTextColor(0xFF0000U);
+lcd.print("Bonjour !");
+lcd.println("Ligne suivante");</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>drawString()</h3>
+              <div class="method-signature">
+                size_t drawString(const char *string, int32_t x, int32_t y)
+              </div>
+              <pre><code class="language-cpp">lcd.drawString("Hello World", 50, 50);</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>drawNumber() / drawFloat()</h3>
+              <div class="method-signature">
+                size_t drawNumber(long num, int32_t x, int32_t y) size_t
+                drawFloat(float num, uint8_t dp, int32_t x, int32_t y)
+              </div>
+              <pre><code class="language-cpp">lcd.drawNumber(12345, 10, 100);
+lcd.drawFloat(3.14159, 2, 10, 120);</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🔤 Polices de Caractères</h2>
+            <div class="method-card">
+              <h3>setFont()</h3>
+              <div class="method-signature">
+                void setFont(const IFont* font)
+              </div>
+              <pre><code class="language-cpp">lcd.setFont(&fonts::Font0); // Police par défaut
+lcd.setFont(&fonts::Font2); // Police plus grande
+lcd.setFont(&fonts::Font7); // Police style GLCD</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>loadFont()</h3>
+              <div class="method-signature">
+                bool loadFont(const char *path)
+              </div>
+              <pre><code class="language-cpp">lcd.loadFont("/fonts/Roboto_Thin_24.vlw"); // Police VLW personnalisée</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>unloadFont()</h3>
+              <div class="method-signature">void unloadFont(void)</div>
+              <pre><code class="language-cpp">lcd.unloadFont(); // Revenir à la police par défaut</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🎨 Styles de Texte</h2>
+            <div class="method-card">
+              <h3>setTextColor()</h3>
+              <div class="method-signature">
+                void setTextColor(uint32_t color) void setTextColor(uint32_t fg,
+                uint32_t bg)
+              </div>
+              <pre><code class="language-cpp">lcd.setTextColor(0x00FF00U); // Texte vert
+lcd.setTextColor(0xFFFFFFU, 0x0000FFU); // Texte blanc sur fond bleu</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>setTextSize()</h3>
+              <div class="method-signature">
+                void setTextSize(float sx, float sy)
+              </div>
+              <pre><code class="language-cpp">lcd.setTextSize(2.0f, 2.0f); // Double taille</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>setTextDatum()</h3>
+              <div class="method-signature">
+                void setTextDatum(textdatum_t datum)
+              </div>
+              <pre><code class="language-cpp">lcd.setTextDatum(top_center); // Centrer le texte
+lcd.drawString("Centré", 120, 100);</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>setTextPadding()</h3>
+              <div class="method-signature">
+                void setTextPadding(uint32_t padding_x)
+              </div>
+              <pre><code class="language-cpp">lcd.setTextPadding(20); // Ajoute un espace à droite du texte</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🌍 Encodage et Unicode</h2>
+            <div class="method-card">
+              <h3>Support UTF-8</h3>
+              <pre><code class="language-cpp">lcd.setFont(&fonts::Font0);
+lcd.drawString("Été, Noël, café, naïve, 你好, Привет", 10, 10);</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>cp437()</h3>
+              <div class="method-signature">void cp437(bool enable)</div>
+              <pre><code class="language-cpp">lcd.cp437(true); // Active le support des caractères ASCII étendus</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>📏 Mesure et Positionnement</h2>
+            <div class="method-card">
+              <h3>setCursor()</h3>
+              <div class="method-signature">
+                void setCursor(int32_t x, int32_t y)
+              </div>
+              <pre><code class="language-cpp">lcd.setCursor(10, 50); // Position du texte</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>getCursorX() / getCursorY()</h3>
+              <div class="method-signature">
+                int32_t getCursorX(void) int32_t getCursorY(void)
+              </div>
+              <pre><code class="language-cpp">int x = lcd.getCursorX();
+int y = lcd.getCursorY();</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>textWidth() / fontHeight()</h3>
+              <div class="method-signature">
+                int32_t textWidth(const char *string) int32_t fontHeight(void)
+              </div>
+              <pre><code class="language-cpp">int largeur = lcd.textWidth("Test");
+int hauteur = lcd.fontHeight();</code></pre>
+            </div>
+          </div>
+          <div class="card warning-box">
+            <h2>⚠️ Conseils et Pièges</h2>
+            <ul>
+              <li>
+                Utilisez <code>setFont()</code> avant d'afficher du texte pour
+                changer la police
+              </li>
+              <li>
+                Les polices VLW doivent être chargées depuis le système de
+                fichiers (SD, SPIFFS...)
+              </li>
+              <li>
+                Pour le texte multilingue, utilisez une police compatible
+                Unicode
+              </li>
+              <li>Le positionnement dépend de la rotation et du padding</li>
+            </ul>
+          </div>
+        </section>
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

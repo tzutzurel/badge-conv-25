@@ -1,14 +1,43 @@
+#include <cstdint>
+
 #include "display_manager.h"
 #include "esp_log.h"
 #include <cmath>
 #include <cstdio>
 #include "driver/gpio.h"
+#include <map>
+#include "config.h"
+
+// Met à jour la luminosité et applique immédiatement
+void DisplayManager::updateBrightness(uint8_t value)
+{
+    Config::setActiveBrightness((uint8_t)value);
+    setBacklight(value);
+}
+
+// Met à jour le temps d'éveil (minutes)
+void DisplayManager::updateAwakeTime(float minutes)
+{
+    if (minutes < 0.1f)
+        minutes = 0.1f;
+    Config::awakeTime = minutes;
+}
+#include "display_manager.h"
+#include "esp_log.h"
+#include <cmath>
+#include <cstdio>
+#include "driver/gpio.h"
+#include <map>
+#include "config.h"
 
 #define BUTTON_GPIO GPIO_NUM_0
 #define LONG_PRESS_DURATION 2000
 
 DisplayManager::DisplayManager(LGFX &lcd, AppState &state)
-    : m_lcd(lcd), m_state(state), m_sprite(&lcd) {}
+    : m_lcd(lcd), m_state(state), m_sprite(&lcd)
+{
+    m_lastActivity = lgfx::v1::millis();
+}
 
 void DisplayManager::init()
 {
@@ -21,6 +50,8 @@ void DisplayManager::init()
     io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
     gpio_config(&io_conf);
 
+    setBacklight(Config::activeBrightness);
+
     m_state.screenW = m_lcd.width();
     m_state.screenH = m_lcd.height();
     m_sprite.setColorDepth(16);
@@ -32,6 +63,9 @@ void DisplayManager::displayLoop()
     if (!shouldRenderFrame())
         return;
 
+    unsigned long now = lgfx::v1::millis();
+    bool activity = false;
+
     // Gérer le bouton
     handleButton();
 
@@ -39,21 +73,29 @@ void DisplayManager::displayLoop()
     bool touchDetected = m_lcd.getTouch(&pixel_x, &pixel_y);
     if (touchDetected)
     {
+        activity = true;
         if (!m_wasTouched)
         {
-            // Essayer de passer le touch à la vue courante
-            bool touchHandled = false;
-            if (!m_views.empty())
+            if (m_sleepMode)
             {
-                touchHandled = m_views[m_currentView]->handleTouch(pixel_x, pixel_y);
+                // Quitter le mode veille sans changer de vue
+                m_sleepMode = false;
+                setBacklight(Config::activeBrightness);
             }
-
-            // Si la vue n'a pas géré le touch, changer de vue
-            if (!touchHandled)
+            else
             {
-                nextView();
+                // Essayer de passer le touch à la vue courante
+                bool touchHandled = false;
+                if (!m_views.empty())
+                {
+                    touchHandled = m_views[m_currentView]->handleTouch(pixel_x, pixel_y);
+                }
+                // Si la vue n'a pas géré le touch, changer de vue
+                if (!touchHandled)
+                {
+                    nextView();
+                }
             }
-
             m_wasTouched = true;
         }
     }
@@ -62,18 +104,45 @@ void DisplayManager::displayLoop()
         m_wasTouched = false;
     }
 
-    if (!m_views.empty())
+    // Sortie de veille si bouton pressé
+    if (!m_sleepMode && activity)
+        m_lastActivity = now;
+
+    // Entrée en veille après config.awakeTime minutes d'inactivité
+    unsigned long awakeTimeMs = (unsigned long)(Config::awakeTime * 60.0f * 1000.0f);
+    if (!m_sleepMode && (now - m_lastActivity > awakeTimeMs))
     {
-        m_views[m_currentView]->render(m_lcd, m_sprite);
+        m_sleepMode = true;
+        setBacklight(Config::sleepBrightness);
     }
 
-    // Attendre que les opérations SPI précédentes soient terminées
-    m_lcd.waitDisplay();
+    if (!m_views.empty())
+    {
+        auto &view = m_views[m_currentView];
+        if (!view->needsRedraw() && view->hasInitialRender())
+        {
+            // Vue statique déjà rendue, ne rien faire
+            vTaskDelay(1);
+            return;
+        }
 
-    m_sprite.pushSprite(0, 0);
-
-    // Yield pour laisser tourner les autres tâches (notamment IDLE pour le watchdog)
-    vTaskDelay(1);
+        // Sinon, rendre la vue normalement
+        view->render(m_lcd, m_sprite);
+        view->setInitialRender(true);
+        // Attendre que les opérations SPI précédentes soient terminées
+        m_lcd.waitDisplay();
+        m_sprite.pushSprite(0, 0);
+        vTaskDelay(1);
+    }
+}
+void DisplayManager::setBacklight(uint8_t percent)
+{
+    // Clamp percent entre 0 et 100
+    if (percent > 100)
+        percent = 100;
+    // La méthode setBrightness attend une valeur entre 0 et 255
+    uint8_t value = (percent * 255) / 100;
+    m_lcd.setBrightness(value);
 }
 
 void DisplayManager::addView(std::unique_ptr<View> view)
@@ -86,6 +155,7 @@ void DisplayManager::nextView()
     if (m_views.empty())
         return;
     m_currentView = (m_currentView + 1) % m_views.size();
+    m_views[m_currentView]->setInitialRender(false);
 }
 
 bool DisplayManager::shouldRenderFrame()
@@ -94,18 +164,19 @@ bool DisplayManager::shouldRenderFrame()
     static bool firstFrame = true;
 
     unsigned long now = lgfx::v1::millis();
+    unsigned long frameDurationMs = 1000 / m_targetFps;
 
     // Initialiser lors de la première frame
     if (firstFrame)
     {
         lastFrame = now;
-        m_state.dt = 0.016f; // Valeur par défaut pour la première frame
+        m_state.dt = 1.0f / m_targetFps; // Valeur par défaut pour la première frame
         m_state.t = now * 0.001f;
         firstFrame = false;
         return true;
     }
 
-    if (now - lastFrame < 16)
+    if ((now - lastFrame) < frameDurationMs)
     {
         vTaskDelay(pdMS_TO_TICKS(1));
         return false;

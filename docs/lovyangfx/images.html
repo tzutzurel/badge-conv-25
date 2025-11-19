@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Images - LovyanGFX Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li>
+            <a href="images.html" class="active">🖼️ Gestion des Images</a>
+          </li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+      <main class="content">
+        <header class="page-header">
+          <h1>🖼️ Gestion des Images</h1>
+          <p class="subtitle">
+            Charger, afficher et manipuler des images BMP, JPG, PNG, QOI
+          </p>
+        </header>
+        <section>
+          <div class="card">
+            <h2>📂 Formats d'Images Supportés</h2>
+            <ul>
+              <li><strong>BMP</strong> : Images bitmap non compressées</li>
+              <li>
+                <strong>JPG/JPEG</strong> : Images compressées, supporte le
+                décodage rapide
+              </li>
+              <li>
+                <strong>PNG</strong> : Images compressées avec transparence
+              </li>
+              <li>
+                <strong>QOI</strong> : Format ultra-rapide pour microcontrôleurs
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>🖼️ Afficher une Image depuis la Mémoire</h2>
+            <div class="method-card">
+              <h3>pushImage()</h3>
+              <div class="method-signature">
+                void pushImage(int32_t x, int32_t y, int32_t w, int32_t h, const
+                T* data)
+              </div>
+              <pre><code class="language-cpp">// Afficher une image RGB565 en mémoire
+lcd.pushImage(0, 0, 100, 100, imageData);</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>📁 Afficher une Image depuis un Fichier</h2>
+            <div class="method-card">
+              <h3>
+                drawBmpFile() / drawJpgFile() / drawPngFile() / drawQoiFile()
+              </h3>
+              <div class="method-signature">
+                bool drawBmpFile(const char *path, ...) bool drawJpgFile(const
+                char *path, ...) bool drawPngFile(const char *path, ...) bool
+                drawQoiFile(const char *path, ...)
+              </div>
+              <pre><code class="language-cpp">lcd.drawBmpFile("/images/logo.bmp", 0, 0);
+lcd.drawJpgFile("/images/photo.jpg", 10, 10);
+lcd.drawPngFile("/images/icon.png", 50, 50);
+lcd.drawQoiFile("/images/fast.qoi", 100, 100);</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>⚡ Affichage Asynchrone (DMA)</h2>
+            <div class="method-card">
+              <h3>pushImageDMA()</h3>
+              <div class="method-signature">
+                void pushImageDMA(int32_t x, int32_t y, int32_t w, int32_t h,
+                const T* data)
+              </div>
+              <pre><code class="language-cpp">lcd.pushImageDMA(0, 0, 320, 240, imageData); // Transfert non bloquant</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🎨 Transparence et Palette</h2>
+            <div class="method-card">
+              <h3>pushImage() avec transparence</h3>
+              <div class="method-signature">
+                void pushImage(int32_t x, int32_t y, int32_t w, int32_t h, const
+                T* data, const T& transparent)
+              </div>
+              <pre><code class="language-cpp">lcd.pushImage(0, 0, 100, 100, imageData, 0xFFFFFFU); // Blanc transparent</code></pre>
+            </div>
+          </div>
+          <div class="card">
+            <h2>🔄 Transformations d'Images</h2>
+            <div class="method-card">
+              <h3>pushImageRotateZoom()</h3>
+              <div class="method-signature">
+                void pushImageRotateZoom(float dst_x, float dst_y, float src_x,
+                float src_y, float angle, float zoom_x, float zoom_y, int32_t w,
+                int32_t h, const T* data)
+              </div>
+              <pre><code class="language-cpp">lcd.pushImageRotateZoom(160, 120, 0, 0, 45.0f, 1.5f, 1.5f, 100, 100, imageData); // Rotation et zoom</code></pre>
+            </div>
+            <div class="method-card">
+              <h3>pushImageAffine()</h3>
+              <div class="method-signature">
+                void pushImageAffine(const float matrix[6], int32_t w, int32_t
+                h, const T* data)
+              </div>
+              <pre><code class="language-cpp">float mat[6] = {1, 0, 0, 0, 1, 0}; // Identité
+lcd.pushImageAffine(mat, 100, 100, imageData);</code></pre>
+            </div>
+          </div>
+          <div class="card warning-box">
+            <h2>⚠️ Conseils et Pièges</h2>
+            <ul>
+              <li>
+                Les images doivent être dans le format attendu (RGB565,
+                RGB888...)
+              </li>
+              <li>
+                Pour les fichiers, le chemin doit être accessible (SD,
+                SPIFFS...)
+              </li>
+              <li>Le DMA n'est pas disponible sur tous les panneaux</li>
+              <li>La transparence n'est pas supportée sur tous les formats</li>
+              <li>
+                Pour les images volumineuses, privilégiez le DMA ou les sprites
+              </li>
+            </ul>
+          </div>
+        </section>
+        <footer class="page-footer">
+          <p>
+            Documentation LovyanGFX |
+            <a href="index.html">Retour à l'accueil</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>

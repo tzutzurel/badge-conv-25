@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LovyanGFX - Documentation API en Français</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h2>LovyanGFX</h2>
+          <p class="version">Documentation API</p>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="active">🏠 Accueil</a></li>
+          <li><a href="introduction.html">📖 Introduction</a></li>
+          <li><a href="initialisation.html">⚙️ Initialisation</a></li>
+          <li><a href="couleurs.html">🎨 Gestion des Couleurs</a></li>
+          <li><a href="formes.html">📐 Dessiner des Formes</a></li>
+          <li><a href="texte.html">✍️ Affichage de Texte</a></li>
+          <li><a href="images.html">🖼️ Gestion des Images</a></li>
+          <li><a href="sprites.html">🎮 Sprites (Offscreen)</a></li>
+          <li><a href="avance.html">🚀 Fonctions Avancées</a></li>
+          <li><a href="exemples.html">💡 Exemples Pratiques</a></li>
+        </ul>
+      </nav>
+
+      <main class="content">
+        <header class="page-header">
+          <h1>Bienvenue sur la Documentation LovyanGFX</h1>
+          <p class="subtitle">
+            Bibliothèque graphique haute performance pour écrans LCD/OLED/EPD
+          </p>
+        </header>
+
+        <section class="intro-section">
+          <div class="card">
+            <h2>🚀 À propos de LovyanGFX</h2>
+            <p>
+              LovyanGFX est une bibliothèque graphique puissante et performante
+              conçue pour les microcontrôleurs ESP32, ESP8266, ATSAMD51, RP2040
+              et plus encore. Elle offre une compatibilité avec AdafruitGFX et
+              TFT_eSPI tout en proposant des performances supérieures et des
+              fonctionnalités avancées.
+            </p>
+
+            <div class="features-grid">
+              <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Haute Performance</h3>
+                <p>
+                  Utilisation optimisée du DMA et du SPI pour des vitesses de
+                  rafraîchissement maximales
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Couleurs Riches</h3>
+                <p>
+                  Support RGB332 (8 bits), RGB565 (16 bits) et RGB888 (24 bits)
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Nombreux Écrans</h3>
+                <p>
+                  Compatible avec ILI9341, ILI9342, ST7789, ST7735, SSD1306 et
+                  bien d'autres
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <h3>Sprites Avancés</h3>
+                <p>
+                  Rotation, zoom, transparence et anti-aliasing en temps réel
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">✍️</div>
+                <h3>Polices Flexibles</h3>
+                <p>Support des polices GFX, GLCD, VLW et Unicode (UTF-8)</p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">🖼️</div>
+                <h3>Images Multiples</h3>
+                <p>Chargement JPG, PNG, BMP et QOI depuis mémoire ou SD</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>📋 Guide de Navigation</h2>
+            <div class="nav-cards">
+              <a href="introduction.html" class="nav-card">
+                <div class="nav-card-icon">📖</div>
+                <h3>Introduction</h3>
+                <p>
+                  Découvrez les concepts de base et l'architecture de la
+                  bibliothèque
+                </p>
+              </a>
+              <a href="initialisation.html" class="nav-card">
+                <div class="nav-card-icon">⚙️</div>
+                <h3>Initialisation</h3>
+                <p>Configuration et mise en place de votre écran</p>
+              </a>
+              <a href="couleurs.html" class="nav-card">
+                <div class="nav-card-icon">🎨</div>
+                <h3>Couleurs</h3>
+                <p>Comprendre et utiliser les différents formats de couleur</p>
+              </a>
+              <a href="formes.html" class="nav-card">
+                <div class="nav-card-icon">📐</div>
+                <h3>Formes</h3>
+                <p>Dessiner pixels, lignes, rectangles, cercles et plus</p>
+              </a>
+              <a href="texte.html" class="nav-card">
+                <div class="nav-card-icon">✍️</div>
+                <h3>Texte</h3>
+                <p>Affichage de texte avec différentes polices et styles</p>
+              </a>
+              <a href="images.html" class="nav-card">
+                <div class="nav-card-icon">🖼️</div>
+                <h3>Images</h3>
+                <p>Charger et afficher des images en différents formats</p>
+              </a>
+              <a href="sprites.html" class="nav-card">
+                <div class="nav-card-icon">🎮</div>
+                <h3>Sprites</h3>
+                <p>Créer des buffers hors-écran pour des animations fluides</p>
+              </a>
+              <a href="avance.html" class="nav-card">
+                <div class="nav-card-icon">🚀</div>
+                <h3>Avancé</h3>
+                <p>Transformations affines, effets et optimisations</p>
+              </a>
+              <a href="exemples.html" class="nav-card">
+                <div class="nav-card-icon">💡</div>
+                <h3>Exemples</h3>
+                <p>Code complet et exemples d'utilisation pratiques</p>
+              </a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>💻 Plateformes Supportées</h2>
+            <div class="platforms">
+              <div class="platform-item">
+                <strong>ESP32</strong>
+                <span class="badge">SPI</span>
+                <span class="badge">I2C</span>
+                <span class="badge">8-bit Parallel</span>
+                <span class="badge">CVBS</span>
+              </div>
+              <div class="platform-item">
+                <strong>ESP32-S2</strong>
+                <span class="badge">SPI</span>
+                <span class="badge">I2C</span>
+                <span class="badge">8-bit Parallel</span>
+                <span class="badge">16-bit Parallel</span>
+              </div>
+              <div class="platform-item">
+                <strong>ESP32-S3</strong>
+                <span class="badge">SPI</span>
+                <span class="badge">I2C</span>
+                <span class="badge">LCD/CAM</span>
+                <span class="badge">RGB</span>
+              </div>
+              <div class="platform-item">
+                <strong>ESP32-C3</strong>
+                <span class="badge">SPI</span>
+                <span class="badge">I2C</span>
+                <span class="badge">8-bit (SW)</span>
+              </div>
+              <div class="platform-item">
+                <strong>ESP8266</strong>
+                <span class="badge">SPI</span>
+                <span class="badge">I2C (SW)</span>
+              </div>
+              <div class="platform-item">
+                <strong>ATSAMD51/21</strong>
+                <span class="badge">SPI</span>
+                <span class="badge">I2C</span>
+              </div>
+              <div class="platform-item">
+                <strong>RP2040</strong>
+                <span class="badge">SPI</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🎯 Démarrage Rapide</h2>
+            <pre><code class="language-cpp">#include &lt;LovyanGFX.hpp&gt;
+
+// Créer une instance LGFX
+static LGFX lcd;
+
+void setup() {
+    // Initialiser l'écran
+    lcd.init();
+    
+    // Définir la rotation (0-3)
+    lcd.setRotation(1);
+    
+    // Régler la luminosité (0-255)
+    lcd.setBrightness(128);
+    
+    // Effacer l'écran en noir
+    lcd.fillScreen(0x000000);
+    
+    // Dessiner un rectangle rouge
+    lcd.fillRect(10, 10, 100, 50, 0xFF0000);
+    
+    // Afficher du texte
+    lcd.setTextColor(0xFFFFFF);
+    lcd.setCursor(20, 20);
+    lcd.println("Bonjour LovyanGFX!");
+}
+
+void loop() {
+    // Votre code d'animation ici
+}</code></pre>
+          </div>
+
+          <div class="card info-box">
+            <h2>ℹ️ Informations Importantes</h2>
+            <ul>
+              <li>
+                <strong>HW</strong> = Périphérique matériel (Hardware
+                Peripheral)
+              </li>
+              <li>
+                <strong>SW</strong> = Implémentation logicielle (Software
+                implementation)
+              </li>
+              <li>
+                Les fonctions <code>write~()</code> nécessitent un appel
+                explicite à <code>startWrite()</code>
+              </li>
+              <li>
+                Pour les écrans EPD (papier électronique), appelez
+                <code>endWrite()</code> pour actualiser l'affichage
+              </li>
+              <li>
+                Utilisez <code>startWrite()/endWrite()</code> pour améliorer les
+                performances lors de multiples opérations
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <p>
+            Documentation créée pour LovyanGFX | Auteur original :
+            <a href="https://github.com/lovyan03" target="_blank">lovyan03</a>
+          </p>
+          <p>Contributeurs : ciniml, mongonta0716, tobozo</p>
+        </footer>
+      </main>
+    </div>
+    <script src="sidebar-sections.js"></script>
+  </body>
+</html>
