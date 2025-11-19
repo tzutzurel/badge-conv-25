@@ -198,7 +198,7 @@ bool ViewSettings::handleTouch(int x, int y)
 void ViewSettings::toggleRotation()
 {
     // Inverser la rotation dans Config
-    Config::display_rotated = !Config::display_rotated;
+    Config::setDisplayRotated(!Config::display_rotated);
     ESP_LOGI("ViewSettings", "Display rotation set to %d", Config::display_rotated);
     // Appliquer la rotation via DisplayManager
     m_displayManager.applyRotationFromConfig();

@@ -20,7 +20,7 @@ void DisplayManager::updateAwakeTime(float minutes)
 {
     if (minutes < 0.1f)
         minutes = 0.1f;
-    Config::awakeTime = minutes;
+    Config::setAwakeTime(minutes);
 }
 #include "display_manager.h"
 #include "esp_log.h"
@@ -239,7 +239,7 @@ void DisplayManager::handleButton()
         if (press_duration >= LONG_PRESS_DURATION)
         {
             // Clic long détecté : inverser la rotation
-            Config::display_rotated = !Config::display_rotated;
+            Config::setDisplayRotated(!Config::display_rotated);
             applyRotationFromConfig();
             ESP_LOGI("DisplayManager", "Rotation changée: %s", Config::display_rotated ? "180°" : "0°");
         }

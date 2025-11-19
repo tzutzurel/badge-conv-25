@@ -53,6 +53,8 @@ void display_loop_task(void *pvParameter)
 
 extern "C" void app_main(void)
 {
+  Config::initNVS();
+  Config::loadFromNVS();
   ESP_LOGI(TAG, "Initialisation de l'écran...");
   lcd.init();
   srand((unsigned int)time(NULL));
@@ -63,7 +65,7 @@ extern "C" void app_main(void)
   displayManager.addView(std::make_unique<ViewQRCode>());
   displayManager.addView(std::make_unique<ViewProgram>(appState, lcd));
   displayManager.addView(std::make_unique<ViewGame>(appState, lcd));
-  //displayManager.addView(std::make_unique<ViewBattery>(&batteryMonitor));
+  // displayManager.addView(std::make_unique<ViewBattery>(&batteryMonitor));
   displayManager.addView(std::make_unique<ViewSettings>(lcd, displayManager));
 
   // Génération du QR code de badge d'accès (après allocation des vues)
