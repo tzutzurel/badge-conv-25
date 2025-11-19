@@ -24,8 +24,8 @@
 #include "views/view_settings.h"
 #include "user_info.h"
 
-#include "battery_monitor.hpp"
-#include "views/view_battery.h"
+// #include "battery_monitor.hpp"
+// #include "views/view_battery.h"
 
 #define TAG "BADGE"
 
@@ -34,14 +34,14 @@ LGFX lcd;
 AppState appState;
 DisplayManager displayManager(lcd, appState);
 
-static BatteryMonitor batteryMonitor(
-    ADC_UNIT_1,
-    ADC_CHANNEL_6, // GPIO34
-    2.0f,          // gain diviseur (R1=R2 => x2)
-    3,             // 3 piles AAA
-    1.00f,         // V min NiMH
-    1.40f          // V max NiMH
-);
+// static BatteryMonitor batteryMonitor(
+//     ADC_UNIT_1,
+//     ADC_CHANNEL_6, // GPIO34
+//     2.0f,          // gain diviseur (R1=R2 => x2)
+//     3,             // 3 piles AAA
+//     1.00f,         // V min NiMH
+//     1.40f          // V max NiMH
+// );
 
 void display_loop_task(void *pvParameter)
 {
@@ -63,7 +63,7 @@ extern "C" void app_main(void)
   displayManager.addView(std::make_unique<ViewQRCode>());
   displayManager.addView(std::make_unique<ViewProgram>(appState, lcd));
   displayManager.addView(std::make_unique<ViewGame>(appState, lcd));
-  displayManager.addView(std::make_unique<ViewBattery>(&batteryMonitor));
+  //displayManager.addView(std::make_unique<ViewBattery>(&batteryMonitor));
   displayManager.addView(std::make_unique<ViewSettings>(lcd, displayManager));
 
   // Génération du QR code de badge d'accès (après allocation des vues)
