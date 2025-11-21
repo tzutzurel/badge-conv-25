@@ -251,7 +251,7 @@ bool ViewSettings::handleTouch(int x, int y)
         this->updateAwakeTimeStepper(true);
         return true;
     }
-    return true;
+    return false;
 }
 
 void ViewSettings::toggleRotation()

@@ -22,6 +22,7 @@
 #include "views/view_game.h"
 #include "views/view_program.h"
 #include "views/view_settings.h"
+#include "views/view_plasma.h"
 #include "user_info.h"
 
 // #include "battery_monitor.hpp"
@@ -62,6 +63,7 @@ extern "C" void app_main(void)
 
   // Ajout des vues
   displayManager.addView(std::make_unique<ViewBadge>(appState, lcd));
+  displayManager.addView(std::make_unique<ViewPlasma>(appState, lcd));
   displayManager.addView(std::make_unique<ViewQRCode>());
   displayManager.addView(std::make_unique<ViewProgram>(appState, lcd));
   displayManager.addView(std::make_unique<ViewGame>(appState, lcd));
