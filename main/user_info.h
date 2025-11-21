@@ -22,7 +22,7 @@ constexpr UserInfo user_info = {
     "open|core",    // équipe
     "Lyon",         // ville
     "IOP Master", // poste
-    "MDyloh2NUAa6"  // accessBadgeToken
+    "KGgpjiaGcVBU"  // accessBadgeToken
 };
 
 // Version QR code suffisante pour un token court (12 caractères)
