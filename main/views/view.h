@@ -29,6 +29,14 @@ public:
     // Méthode virtuelle pour gérer les touches (optionnelle)
     // Retourne true si la vue a consommé le touch (ne pas changer de vue)
     virtual bool handleTouch(int x, int y) { return false; }
+    
+    // Indique si la vue est interactive et nécessite de désactiver l'appui long
+    virtual bool isInteractiveView() const { return false; }
+    
+    // Indique si une position de touch est dans une zone interactive (pour bloquer appui long)
+    // Retourne true si le touch à (x,y) est dans une zone où l'appui long doit être bloqué
+    virtual bool isTouchInInteractiveZone(int x, int y) const { return false; }
+    
     bool m_needsRedraw;
 
 protected:

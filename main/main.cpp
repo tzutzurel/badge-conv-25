@@ -20,6 +20,7 @@
 #include "views/view_qrcode.h"
 #include "views/view_badge.h"
 #include "views/view_game.h"
+#include "views/view_cat.h"
 #include "views/view_program.h"
 #include "views/view_settings.h"
 #include "views/view_plasma.h"
@@ -67,7 +68,8 @@ extern "C" void app_main(void)
   displayManager.addView(std::make_unique<ViewQRCode>());
   displayManager.addView(std::make_unique<ViewProgram>(appState, lcd));
   displayManager.addView(std::make_unique<ViewGame>(appState, lcd));
-  // displayManager.addView(std::make_unique<ViewBattery>(&batteryMonitor));
+  displayManager.addView(std::make_unique<ViewCat>(appState, lcd));
+//  displayManager.addView(std::make_unique<ViewBattery>(&batteryMonitor));
   displayManager.setSettingsView(std::make_unique<ViewSettings>(lcd, displayManager));
 
   // Génération du QR code de badge d'accès (après allocation des vues)

@@ -94,14 +94,35 @@ void DisplayManager::displayLoop()
             if (!m_longPressTriggered && touchDuration > 1000 && m_settings_view)
             {
                 // Appui long détecté (> 1 seconde)
+                // Ne pas déclencher si on touche dans une zone interactive (comme la zone de caresse du chat)
+                bool inInteractiveZone = false;
+                if (m_currentView != nullptr)
+                {
+                    int test_x = pixel_x;
+                    int test_y = pixel_y;
+                    if (Config::display_rotated)
+                        test_y = test_y + 20;
+                    inInteractiveZone = m_currentView->isTouchInInteractiveZone(test_x, test_y);
+                }
+                
                 m_longPressTriggered = true;
-                if (m_currentView != m_settings_view.get())
+                if (!inInteractiveZone && m_currentView != m_settings_view.get())
                 {
                     ESP_LOGI("DisplayManager", "Long press detected - opening settings");
                     // Aller aux réglages
                     m_currentView = m_settings_view.get();
                     m_currentView->setInitialRender(false);
                 }
+            }
+            
+            // Touch continu - continuer à envoyer les coordonnées à la vue
+            if (!m_views.empty() && !m_sleepMode && m_currentViewIdx < m_views.size())
+            {
+                if (Config::display_rotated)
+                {
+                    pixel_y = pixel_y + 20;
+                }
+                m_views[m_currentViewIdx]->handleTouch(pixel_x, pixel_y);
             }
         }
     }
@@ -140,6 +161,13 @@ void DisplayManager::displayLoop()
                         nextView();
                 }
             }
+        }
+        
+        // Plus de touch détecté - notifier la vue que le touch est terminé
+        if (m_wasTouched && !m_views.empty() && !m_sleepMode && m_currentViewIdx < m_views.size())
+        {
+            // Envoyer des coordonnées hors écran pour signaler la fin du touch
+            m_views[m_currentViewIdx]->handleTouch(-1, -1);
         }
         m_wasTouched = false;
         m_longPressTriggered = false;
