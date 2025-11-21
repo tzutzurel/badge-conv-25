@@ -1,7 +1,9 @@
 #include "view_game.h"
+#include "button.h"
 #include "esp_timer.h"
 #include "esp_random.h"
 #include "esp_log.h"
+#include "nvs.h"
 #include <cmath>
 
 static const char *TAG = "ViewGame";
@@ -22,6 +24,7 @@ ViewGame::ViewGame(AppState &state, LGFX &lcd)
     // Initialiser les boutons
     m_backButton = {m_state.screenW - 32, 5, 25, 25, "X"};
     m_playButton = {m_state.screenW / 2 - 40, m_state.screenH - 60, 80, 35, "JOUER"};
+    m_replayButton = {m_state.screenW / 2 - 40, m_state.screenH - 60, 80, 35, "REJOUER"};
 }
 
 void ViewGame::init()
@@ -30,6 +33,24 @@ void ViewGame::init()
         return;
 
     ESP_LOGI(TAG, "Initializing Crop Defense game");
+
+    // Load best score from NVS
+    nvs_handle_t nvs_handle;
+    esp_err_t err = nvs_open("game", NVS_READONLY, &nvs_handle);
+    if (err == ESP_OK)
+    {
+        err = nvs_get_i32(nvs_handle, "best_score", &m_best_score);
+        nvs_close(nvs_handle);
+        if (err != ESP_OK)
+        {
+            m_best_score = 0;
+        }
+    }
+    else
+    {
+        m_best_score = 0;
+    }
+    ESP_LOGI(TAG, "Best score loaded: %d", m_best_score);
 
     // Mettre à jour la position du bouton retour selon les dimensions actuelles
     m_backButton.x = m_state.screenW - 32;
@@ -66,6 +87,7 @@ void ViewGame::init()
         m_crops[i].health = 100;
         m_crops[i].infected = false;
         m_crops[i].pulse = (float)(esp_random() % 100) / 100.0f * 6.28f;
+        m_crops[i].health_loss_accum = 0.0f;
     }
 
     // Initialiser les menaces
@@ -97,22 +119,12 @@ void ViewGame::update(float dt)
 
     m_game_time += dt;
 
-    // Vérifier victoire (30 secondes)
-    if (m_game_time >= VICTORY_TIME)
-    {
-        m_victory = true;
-        m_game_over = true;
-        m_game_over_time = now;
-        ESP_LOGI(TAG, "Victory! Final score: %d", m_score);
-        return;
-    }
-
     // Augmenter la difficulté avec le temps
-    if (m_spawn_interval > 500)
+    if (m_spawn_interval > 200)
     {
-        m_spawn_interval = 1400 - (unsigned long)(m_game_time * 15);
-        if (m_spawn_interval < 500)
-            m_spawn_interval = 500;
+        m_spawn_interval = 1400 - (unsigned long)(m_game_time * 10);
+        if (m_spawn_interval < 200)
+            m_spawn_interval = 200;
     }
 
     // Spawn des menaces
@@ -131,7 +143,11 @@ void ViewGame::update(float dt)
 
         if (m_crops[i].infected && m_crops[i].health > 0)
         {
-            m_crops[i].health -= (int)(dt * 15.0f); // Perte de santé
+            float health_loss_rate = 20.0f + m_game_time * 0.2f; // Ajusté pour ~5 secondes au début
+            m_crops[i].health_loss_accum += dt * health_loss_rate;
+            int loss = (int)m_crops[i].health_loss_accum;
+            m_crops[i].health -= loss;
+            m_crops[i].health_loss_accum -= loss;
             if (m_crops[i].health <= 0)
             {
                 m_crops[i].health = 0;
@@ -156,6 +172,22 @@ void ViewGame::update(float dt)
         m_victory = false;
         m_game_over_time = now;
         ESP_LOGI(TAG, "Game Over! All crops destroyed. Final score: %d", m_score);
+
+        // Save best score if improved
+        if (m_score > m_best_score)
+        {
+            m_best_score = m_score;
+            nvs_handle_t nvs_handle;
+            esp_err_t err = nvs_open("game", NVS_READWRITE, &nvs_handle);
+            if (err == ESP_OK)
+            {
+                nvs_set_i32(nvs_handle, "best_score", m_best_score);
+                nvs_commit(nvs_handle);
+                nvs_close(nvs_handle);
+                ESP_LOGI(TAG, "New best score saved: %d", m_best_score);
+            }
+        }
+
         return;
     }
 
@@ -166,6 +198,22 @@ void ViewGame::update(float dt)
         m_victory = false;
         m_game_over_time = now;
         ESP_LOGI(TAG, "Game Over! All crops infected. Final score: %d", m_score);
+
+        // Save best score if improved
+        if (m_score > m_best_score)
+        {
+            m_best_score = m_score;
+            nvs_handle_t nvs_handle;
+            esp_err_t err = nvs_open("game", NVS_READWRITE, &nvs_handle);
+            if (err == ESP_OK)
+            {
+                nvs_set_i32(nvs_handle, "best_score", m_best_score);
+                nvs_commit(nvs_handle);
+                nvs_close(nvs_handle);
+                ESP_LOGI(TAG, "New best score saved: %d", m_best_score);
+            }
+        }
+
         return;
     }
 
@@ -415,6 +463,7 @@ void ViewGame::handleTouchInternal(int touch_x, int touch_y)
         {
             m_crops[i].infected = false;
             m_crops[i].health = 100;
+            m_crops[i].health_loss_accum = 0.0f; // Reset accumulator
             m_score += 5;
             createExplosion(m_crops[i].x, m_crops[i].y, m_colGreen);
             ESP_LOGI(TAG, "Crop healed! Score: %d", m_score);
@@ -440,7 +489,7 @@ bool ViewGame::handleTouch(int x, int y)
         return false;
     }
 
-    // Si le jeu est terminé, appui n'importe où pour recommencer (sauf bouton retour)
+    // Si le jeu est terminé, vérifier les boutons
     if (m_game_over)
     {
         // Vérifier si on appuie sur le bouton retour
@@ -458,12 +507,18 @@ bool ViewGame::handleTouch(int x, int y)
             return false; // Ne pas consommer - permet de changer de vue
         }
 
-        // Sinon, réinitialiser le jeu
-        ESP_LOGI(TAG, "Restarting game...");
-        m_initialized = false; // Forcer la réinitialisation
-        m_show_intro = true;   // Réafficher l'intro
-        m_game_started = false;
-        init(); // Réinitialiser le jeu
+        // Vérifier si on appuie sur le bouton rejouer
+        if (isButtonPressed(m_replayButton, x, y))
+        {
+            ESP_LOGI(TAG, "Replay button pressed - Restarting game...");
+            m_initialized = false; // Forcer la réinitialisation
+            m_show_intro = true;   // Réafficher l'intro
+            m_game_started = false;
+            init(); // Réinitialiser le jeu
+            return true;
+        }
+
+        // Aucun bouton pressé
         return true;
     }
 
@@ -485,12 +540,6 @@ bool ViewGame::handleTouch(int x, int y)
     // Jeu en cours - traiter le touch pour tirer sur les menaces
     handleTouchInternal(x, y);
     return true;
-}
-
-bool ViewGame::isButtonPressed(const Button &btn, int touch_x, int touch_y)
-{
-    return touch_x >= btn.x && touch_x <= btn.x + btn.w &&
-           touch_y >= btn.y && touch_y <= btn.y + btn.h;
 }
 
 void ViewGame::createExplosion(float x, float y, uint16_t color)
@@ -694,13 +743,13 @@ void ViewGame::renderHUD(LGFX_Sprite &spr)
     spr.setTextColor(m_colCyan);
     spr.setTextSize(1);
     spr.setCursor(5, 5);
-    spr.print("DEFENDER");
+    spr.print("Record");
 
     // Logo Groupama centré (ligne du haut)
     int center_x = m_state.screenW / 2;
     spr.setTextColor(m_colGreen);
     spr.setCursor(center_x - 30, 5);
-    spr.print("GROUPAMA");
+    spr.print("SCORE");
 
     // Bouton retour (carré avec croix, en haut à droite)
     spr.drawRect(m_backButton.x, m_backButton.y, m_backButton.w, m_backButton.h, m_colWhite);
@@ -711,27 +760,15 @@ void ViewGame::renderHUD(LGFX_Sprite &spr)
     spr.drawLine(cx - cross_size / 2, cy - cross_size / 2, cx + cross_size / 2, cy + cross_size / 2, m_colWhite);
     spr.drawLine(cx + cross_size / 2, cy - cross_size / 2, cx - cross_size / 2, cy + cross_size / 2, m_colWhite);
 
-    // Score (en bas à gauche)
-    spr.setTextColor(m_colYellow);
+    // Meilleur score sous DEFENDER
+    spr.setTextColor(m_colCyan);
     spr.setCursor(5, 20);
-    spr.printf("Score: %d", m_score);
+    spr.printf("%ld", m_best_score);
 
-    // Timer avec compte à rebours centré (ligne du bas)
-    int remaining_time = (int)(VICTORY_TIME - m_game_time);
-    if (remaining_time < 0)
-        remaining_time = 0;
-
-    uint16_t timer_color;
-    if (remaining_time > 15)
-        timer_color = m_colGreen;
-    else if (remaining_time > 5)
-        timer_color = m_colYellow;
-    else
-        timer_color = m_colRed;
-
-    spr.setTextColor(timer_color);
-    spr.setCursor(center_x - 18, 20);
-    spr.printf("%02d:%02d", remaining_time / 60, remaining_time % 60);
+    // Score sous GROUPAMA
+    spr.setTextColor(m_colGreen);
+    spr.setCursor(center_x - 30, 20);
+    spr.printf("%d", m_score);
 
     // Bordure top
     spr.drawLine(0, 38, m_state.screenW, 38, m_colCyan);
@@ -788,14 +825,33 @@ void ViewGame::renderGameOver(LGFX_Sprite &spr)
     sprintf(score_str, "Score: %d", m_score);
     spr.drawString(score_str, center_x, 140);
 
+    // Nouveau record
+    if (m_score == m_best_score && m_score > 0)
+    {
+        spr.setTextColor(m_colGreen);
+        spr.drawString("Nouveau record!", center_x, 155);
+    }
+
     // Message Groupama
     spr.setTextColor(m_colGreen);
-    spr.drawString("Groupama protege", center_x, 165);
-    spr.drawString("vos cultures!", center_x, 180);
+    spr.drawString("Groupama protege", center_x, 175);
+    spr.drawString("vos cultures!", center_x, 190);
 
-    // Instructions pour rejouer
-    spr.setTextColor(m_colCyan);
-    spr.drawString("Touchez pour rejouer", center_x, 205);
+    // Bouton Rejouer
+    int replay_y = 250;
+    m_replayButton.x = center_x - 60;
+    m_replayButton.y = replay_y;
+    m_replayButton.w = 120;
+    m_replayButton.h = 35;
+
+    spr.fillRect(m_replayButton.x, m_replayButton.y, m_replayButton.w, m_replayButton.h, m_colGreen);
+    spr.drawRect(m_replayButton.x, m_replayButton.y, m_replayButton.w, m_replayButton.h, m_colCyan);
+    spr.drawRect(m_replayButton.x + 1, m_replayButton.y + 1, m_replayButton.w - 2, m_replayButton.h - 2, m_colCyan);
+
+    spr.setTextDatum(MC_DATUM); // Middle Center
+    spr.setTextColor(m_colBackground);
+    spr.setTextSize(2);
+    spr.drawString("REJOUER", center_x, m_replayButton.y + m_replayButton.h / 2);
 
     spr.setTextDatum(TL_DATUM); // Revenir à Top Left par défaut
 }
@@ -817,6 +873,12 @@ void ViewGame::renderIntro(LGFX_Sprite &spr)
     spr.setTextSize(1);
     spr.setTextColor(m_colGreen);
     spr.drawString("Protegez vos cultures!", center_x, 50);
+
+    // Meilleur score
+    spr.setTextColor(m_colYellow);
+    char best_str[30];
+    sprintf(best_str, "Meilleur Score: %ld", m_best_score);
+    spr.drawString(best_str, center_x, 65);
 
     // Instructions
     spr.setTextColor(m_colWhite);
@@ -853,10 +915,6 @@ void ViewGame::renderIntro(LGFX_Sprite &spr)
     spr.setTextColor(m_colOrange);
     spr.drawString("Soignez les cultures", center_x, 195);
     spr.drawString("infectees (rouges)", center_x, 210);
-
-    // Objectif
-    spr.setTextColor(m_colGreen);
-    spr.drawString("Survivez 30 secondes!", center_x, 235);
 
     // Bouton Jouer
     spr.fillRect(m_playButton.x, m_playButton.y, m_playButton.w, m_playButton.h, m_colGreen);

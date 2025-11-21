@@ -2,6 +2,7 @@
 #define VIEW_GAME_H
 
 #include "view.h"
+#include "button.h"
 #include "../state.h"
 #include "../lgfx_custom.h"
 
@@ -10,9 +11,10 @@ struct Crop
 {
     int x;
     int y;
-    int health;    // 0-100
-    bool infected; // Infecté par un nuisible
-    float pulse;   // Animation
+    int health;              // 0-100
+    bool infected;           // Infecté par un nuisible
+    float pulse;             // Animation
+    float health_loss_accum; // Accumulateur pour perte de santé fractionnelle
 };
 
 // Structure pour les menaces
@@ -78,12 +80,12 @@ private:
     bool m_game_over = false;
     bool m_victory = false;
     int m_score = 0;
+    int32_t m_best_score = 0;
     unsigned long m_last_spawn = 0;
     unsigned long m_spawn_interval = 2000; // ms entre spawn
     float m_game_time = 0.0f;
     unsigned long m_last_update = 0;
-    unsigned long m_game_over_time = 0;          // Temps quand game over est déclenché
-    static constexpr float VICTORY_TIME = 30.0f; // 30 secondes pour gagner
+    unsigned long m_game_over_time = 0; // Temps quand game over est déclenché
 
     // Entités du jeu
     static const int MAX_CROPS = 6;
@@ -105,14 +107,8 @@ private:
     uint16_t m_colWhite;
 
     // Boutons
-    struct Button
-    {
-        int x, y, w, h;
-        const char *text;
-    };
     Button m_backButton;
     Button m_playButton;
-    bool isButtonPressed(const Button &btn, int touch_x, int touch_y);
+    Button m_replayButton;
 };
-
 #endif // VIEW_GAME_H
