@@ -12,6 +12,7 @@ public:
     ViewBadge(AppState &state, LGFX &lcd);
     void render(LGFX &display, LGFX_Sprite &spr) override;
     bool handleTouch(int x, int y) override;
+    void onExitView() override;
 
     void initParticles();
     void updateAnimations(float dt);
@@ -40,6 +41,7 @@ public:
     void drawNeonText(LGFX_Sprite &spr, const char *text, int x, int y, uint16_t baseColor);
     void drawNeonLine(LGFX_Sprite &spr, int x1, int y1, int x2, int y2, uint16_t baseColor);
     void drawTriangle(LGFX_Sprite &spr, int cornerX, int cornerY, bool pointRight, bool pointDown, int triSize, uint8_t intensity, uint16_t geomColor);
+    void renderModal(LGFX_Sprite &spr);
 
     AppState &m_state;
     LGFX &m_lcd;

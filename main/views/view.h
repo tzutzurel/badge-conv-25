@@ -36,6 +36,9 @@ public:
     // Indique si une position de touch est dans une zone interactive (pour bloquer appui long)
     // Retourne true si le touch à (x,y) est dans une zone où l'appui long doit être bloqué
     virtual bool isTouchInInteractiveZone(int x, int y) const { return false; }
+
+    virtual void onEnterView() {}
+    virtual void onExitView() {}
     
     bool m_needsRedraw;
 

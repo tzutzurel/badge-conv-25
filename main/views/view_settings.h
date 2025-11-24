@@ -9,15 +9,8 @@ class DisplayManager;
 #include "button.h"
 #include "../lgfx_custom.h"
 #include "../config.h"
-#include "../display_manager.h"
 #include "../Orbitron_Bold24pt7b.h"
-
-// Couleurs badge rétrofuturistes (similaires à ViewBadge)
-extern uint16_t colBackground;
-extern uint16_t colCyan;
-extern uint16_t colYellow;
-extern uint16_t colPink;
-extern uint16_t colMagenta;
+#include "retro_colors.h"
 
 class ViewSettings : public View
 {

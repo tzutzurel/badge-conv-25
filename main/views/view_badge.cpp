@@ -10,6 +10,7 @@
 #include "esp_log.h"
 #include "../Orbitron_Bold24pt7b.h"
 #include "retro_colors.h"
+#include "config.h"
 
 ViewBadge::ViewBadge(AppState &state, LGFX &lcd)
     : m_state(state), m_lcd(lcd)
@@ -221,6 +222,14 @@ void ViewBadge::renderHeader(LGFX_Sprite &spr)
     spr.setTextFont(1);
     spr.setTextSize(2);
 
+    // Calculer le pourcentage G2S basé sur le score
+    int target_percent = 99; // Valeur par défaut si score < 1000
+    if (Config::best_score >= 1000)
+    {
+        // 100% si 1000 points, +100% pour chaque 1000 points au-dessus de 1000
+        target_percent = 100 + ((Config::best_score - 1000) / 1000) * 100;
+    }
+
     // Animation du pourcentage G2S qui grimpe à l'arrivée
     if (!m_state.g2s_percent_anim_started)
     {
@@ -228,19 +237,19 @@ void ViewBadge::renderHeader(LGFX_Sprite &spr)
         m_state.g2s_percent_anim_time = 0.0f;
         m_state.g2s_percent_anim_started = true;
     }
-    // Incrémenter l'animation (vitesse : 5s pour atteindre 100%)
-    if (m_state.g2s_percent_anim < 100.0f)
+    // Incrémenter l'animation (vitesse : 5s pour atteindre la cible)
+    if (m_state.g2s_percent_anim < target_percent)
     {
         m_state.g2s_percent_anim_time += m_state.dt;
         float progress = m_state.g2s_percent_anim_time / 5.0f;
         if (progress > 1.0f)
             progress = 1.0f;
-        m_state.g2s_percent_anim = progress * 100.0f;
+        m_state.g2s_percent_anim = progress * target_percent;
     }
 
     int percent = (int)(m_state.g2s_percent_anim + 0.5f);
-    if (percent > 100)
-        percent = 100;
+    if (percent > target_percent)
+        percent = target_percent;
     char buf[32];
     snprintf(buf, sizeof(buf), "%d%% G2S", percent);
     drawNeonText(spr, buf, m_state.screenW / 2, 20, colCyan);
@@ -271,6 +280,37 @@ void ViewBadge::renderLocationAndRole(LGFX_Sprite &spr)
     spr.setTextSize(2);
     drawNeonText(spr, user_info.ville.c_str(), m_state.screenW / 2, 210, colYellow);
     drawNeonText(spr, user_info.poste.c_str(), m_state.screenW / 2, 240, colYellow);
+}
+
+void ViewBadge::renderModal(LGFX_Sprite &spr)
+{
+    if (!m_state.show_g2s_modal)
+        return;
+
+    // Modal box
+    int modalW = 200;
+    int modalH = 100;
+    int modalX = (m_state.screenW - modalW) / 2;
+    int modalY = (m_state.screenH - modalH) / 2;
+    spr.fillRect(modalX, modalY, modalW, modalH, m_lcd.color565(20, 20, 40));
+    spr.drawRect(modalX, modalY, modalW, modalH, colCyan);
+
+    // Close button (X in top-right corner)
+    int closeX = modalX + modalW - 20;
+    int closeY = modalY + 10;
+    spr.setTextDatum(TC_DATUM);
+    spr.setTextFont(1);
+    spr.setTextSize(2);
+    spr.setTextColor(colRed);
+    spr.drawString("X", closeX, closeY);
+
+    // Text
+    spr.setTextDatum(TC_DATUM);
+    spr.setTextFont(1);
+    spr.setTextSize(1);
+    drawNeonText(spr, "Atteignez 1000 points", m_state.screenW / 2, modalY + 30, colYellow);
+    drawNeonText(spr, "dans le jeu pour debloquer", m_state.screenW / 2, modalY + 50, colYellow);
+    drawNeonText(spr, "100% G2S", m_state.screenW / 2, modalY + 70, colCyan);
 }
 
 void ViewBadge::renderScanlines(LGFX_Sprite &spr)
@@ -802,12 +842,39 @@ void ViewBadge::render(LGFX &display, LGFX_Sprite &spr)
     renderSeparator(spr);                    // Ligne de séparation
     renderTeam(spr);                         // Équipe
     renderLocationAndRole(spr);              // Ville et poste
+    renderModal(spr);                        // Modal si affiché
 }
 
 bool ViewBadge::handleTouch(int x, int y)
 {
-    m_state.g2s_percent_anim = 0.0f;
-    m_state.g2s_percent_anim_time = 0.0f;
+    // Check if modal is shown and touch is on close button
+    if (m_state.show_g2s_modal)
+    {
+        int modalW = 200;
+        int modalH = 100;
+        int modalX = (m_state.screenW - modalW) / 2;
+        int modalY = (m_state.screenH - modalH) / 2;
+        int closeX = modalX + modalW - 20;
+        int closeY = modalY + 10;
+        if (x >= closeX - 10 && x <= closeX + 10 && y >= closeY - 5 && y <= closeY + 15)
+        {
+            m_state.show_g2s_modal = false;
+            return true; // Consume the touch
+        }
+    }
+
+    // Check if touch is on header (y around 20, x centered)
+    if (y >= 10 && y <= 30 && x >= m_state.screenW / 2 - 50 && x <= m_state.screenW / 2 + 50)
+    {
+        m_state.show_g2s_modal = true;
+        return true; // Consume the touch
+    }
     // Pas d'interaction tactile pour cette vue
     return false;
+}
+
+void ViewBadge::onExitView()
+{
+    m_state.g2s_percent_anim = 0.0f;
+    m_state.g2s_percent_anim_time = 0.0f;
 }

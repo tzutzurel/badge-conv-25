@@ -115,8 +115,13 @@ void DisplayManager::displayLoop()
                 {
                     ESP_LOGI("DisplayManager", "Long press detected - opening settings");
                     // Aller aux réglages
+                    if (m_currentView != nullptr)
+                    {
+                        m_currentView->onExitView();
+                    }
                     m_currentView = m_settings_view.get();
                     m_currentView->setInitialRender(false);
+                    m_currentView->onEnterView();
                 }
             }
 
@@ -236,7 +241,10 @@ void DisplayManager::addView(std::unique_ptr<View> view)
 {
     m_views.push_back(std::move(view));
     if (m_currentView == nullptr)
+    {
         m_currentView = m_views[0].get();
+        m_currentView->onEnterView();
+    }
 }
 
 void DisplayManager::setSettingsView(std::unique_ptr<View> view)
@@ -248,9 +256,19 @@ void DisplayManager::nextView(int direction)
 {
     if (m_views.empty())
         return;
+
+    // Call onExitView on the current view if it exists
+    if (m_currentView != nullptr)
+    {
+        m_currentView->onExitView();
+    }
+
     m_currentViewIdx = (m_currentViewIdx + direction + m_views.size()) % m_views.size();
     m_currentView = m_views[m_currentViewIdx].get();
     m_currentView->setInitialRender(false);
+
+    // Call onEnterView on the new view
+    m_currentView->onEnterView();
 }
 
 bool DisplayManager::shouldRenderFrame()

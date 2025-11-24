@@ -13,10 +13,12 @@ namespace Config
     static const char *KEY_ACTIVE_BRIGHT = "active_bright";
     static const char *KEY_SLEEP_BRIGHT = "sleep_bright";
     static const char *KEY_AWAKE_TIME = "awake_time";
+    static const char *KEY_BEST_SCORE = "best_score";
     float awakeTime = 5.0f;
     uint8_t sleepBrightness = 10;
     uint8_t activeBrightness = 80;
     bool display_rotated = false;
+    int best_score = 0;
 
     void setActiveBrightness(uint8_t value)
     {
@@ -39,6 +41,12 @@ namespace Config
         saveToNVS();
     }
 
+    void setBestScore(int value)
+    {
+        best_score = value;
+        saveToNVS();
+    }
+
     void saveToNVS()
     {
         nvs_handle_t handle;
@@ -49,6 +57,7 @@ namespace Config
             nvs_set_u8(handle, KEY_SLEEP_BRIGHT, sleepBrightness);
             nvs_set_u8(handle, KEY_ROTATED, display_rotated ? 1 : 0);
             nvs_set_blob(handle, KEY_AWAKE_TIME, &awakeTime, sizeof(awakeTime));
+            nvs_set_i32(handle, KEY_BEST_SCORE, best_score);
             err = nvs_commit(handle);
             if (err == ESP_OK)
             {
@@ -92,6 +101,12 @@ namespace Config
             if (nvs_get_blob(handle, KEY_AWAKE_TIME, &awakeTime, &size) == ESP_OK)
             {
                 ESP_LOGI(TAG, "Loaded awakeTime: %.2f", awakeTime);
+            }
+            int32_t val32;
+            if (nvs_get_i32(handle, KEY_BEST_SCORE, &val32) == ESP_OK)
+            {
+                best_score = val32;
+                ESP_LOGI(TAG, "Loaded best_score: %d", best_score);
             }
             nvs_close(handle);
         }

@@ -3,7 +3,7 @@
 #include "esp_timer.h"
 #include "esp_random.h"
 #include "esp_log.h"
-#include "nvs.h"
+#include "config.h"
 #include <cmath>
 
 static const char *TAG = "ViewGame";
@@ -34,22 +34,7 @@ void ViewGame::init()
 
     ESP_LOGI(TAG, "Initializing Crop Defense game");
 
-    // Load best score from NVS
-    nvs_handle_t nvs_handle;
-    esp_err_t err = nvs_open("game", NVS_READONLY, &nvs_handle);
-    if (err == ESP_OK)
-    {
-        err = nvs_get_i32(nvs_handle, "best_score", &m_best_score);
-        nvs_close(nvs_handle);
-        if (err != ESP_OK)
-        {
-            m_best_score = 0;
-        }
-    }
-    else
-    {
-        m_best_score = 0;
-    }
+    m_best_score = Config::best_score;
     ESP_LOGI(TAG, "Best score loaded: %d", m_best_score);
 
     // Mettre à jour la position du bouton retour selon les dimensions actuelles
@@ -62,7 +47,7 @@ void ViewGame::init()
     m_victory = false;
     m_score = 0;
     m_game_time = 0.0f;
-    m_spawn_interval = 1400; // Ajusté pour difficulté équilibrée
+    m_spawn_interval = 1000; // Ajusté pour difficulté équilibrée
     m_last_spawn = esp_timer_get_time() / 1000ULL;
     m_last_update = m_last_spawn;
 
@@ -177,15 +162,8 @@ void ViewGame::update(float dt)
         if (m_score > m_best_score)
         {
             m_best_score = m_score;
-            nvs_handle_t nvs_handle;
-            esp_err_t err = nvs_open("game", NVS_READWRITE, &nvs_handle);
-            if (err == ESP_OK)
-            {
-                nvs_set_i32(nvs_handle, "best_score", m_best_score);
-                nvs_commit(nvs_handle);
-                nvs_close(nvs_handle);
-                ESP_LOGI(TAG, "New best score saved: %d", m_best_score);
-            }
+            Config::setBestScore(m_best_score);
+            ESP_LOGI(TAG, "New best score saved: %d", m_best_score);
         }
 
         return;
@@ -203,15 +181,8 @@ void ViewGame::update(float dt)
         if (m_score > m_best_score)
         {
             m_best_score = m_score;
-            nvs_handle_t nvs_handle;
-            esp_err_t err = nvs_open("game", NVS_READWRITE, &nvs_handle);
-            if (err == ESP_OK)
-            {
-                nvs_set_i32(nvs_handle, "best_score", m_best_score);
-                nvs_commit(nvs_handle);
-                nvs_close(nvs_handle);
-                ESP_LOGI(TAG, "New best score saved: %d", m_best_score);
-            }
+            Config::setBestScore(m_best_score);
+            ESP_LOGI(TAG, "New best score saved: %d", m_best_score);
         }
 
         return;

@@ -52,4 +52,8 @@ public:
     float g2s_percent_anim = 0.0f; // 0.0 à 100.0, animé à l'arrivée sur l'écran
     bool g2s_percent_anim_started = false;
     float g2s_percent_anim_time = 0.0f; // Temps écoulé depuis le début de l'anim
+
+    
+    // Modal for G2S info
+    bool show_g2s_modal = false;
 };

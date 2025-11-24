@@ -6,6 +6,7 @@ uint16_t colYellow = 0;
 uint16_t colPink = 0;
 uint16_t colMagenta = 0;
 uint16_t colWhite = 0;
+uint16_t colRed = 0;
 
 void initColors(LGFX &display)
 {
@@ -17,5 +18,6 @@ void initColors(LGFX &display)
         colPink = display.color565(255, 20, 220);
         colMagenta = display.color565(255, 64, 255);
         colWhite = display.color565(255, 255, 255);
+        colRed = display.color565(255, 0, 0);
     }
 }

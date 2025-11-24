@@ -1,5 +1,6 @@
 #include "view_badge.h" // Pour initColors et couleurs badge
 #include "view_settings.h"
+#include "../display_manager.h"
 #include "retro_colors.h"
 #include "button.h"
 #include <esp_log.h>
