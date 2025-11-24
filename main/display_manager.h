@@ -31,13 +31,15 @@ private:
     AppState &m_state;
     std::vector<std::unique_ptr<View>> m_views;
     size_t m_currentViewIdx = 0;
-    View* m_currentView = nullptr;
+    View *m_currentView = nullptr;
     std::unique_ptr<View> m_settings_view;
     bool m_wasTouched = false;
     unsigned long m_touchStartTime = 0;
     bool m_longPressTriggered = false;
     int m_touchX = -1;
     int m_touchY = -1;
+    int m_touchEndX = -1;
+    int m_touchEndY = -1;
     LGFX_Sprite m_sprite;
     int m_targetFps = 30;
     unsigned long m_lastActivity = 0;

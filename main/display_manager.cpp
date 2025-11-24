@@ -76,10 +76,12 @@ void DisplayManager::displayLoop()
             // Début du touch - sauvegarder les coordonnées
             m_touchX = pixel_x;
             m_touchY = pixel_y;
+            m_touchEndX = pixel_x;
+            m_touchEndY = pixel_y;
             m_touchStartTime = now;
             m_longPressTriggered = false;
             m_wasTouched = true;
-            
+
             if (m_sleepMode)
             {
                 // Quitter le mode veille sans changer de vue
@@ -89,6 +91,9 @@ void DisplayManager::displayLoop()
         }
         else
         {
+            // Update end position for swipe detection
+            m_touchEndX = pixel_x;
+            m_touchEndY = pixel_y;
             // Touch maintenu - vérifier pour appui long
             unsigned long touchDuration = now - m_touchStartTime;
             if (!m_longPressTriggered && touchDuration > 1000 && m_settings_view)
@@ -104,7 +109,7 @@ void DisplayManager::displayLoop()
                         test_y = test_y + 20;
                     inInteractiveZone = m_currentView->isTouchInInteractiveZone(test_x, test_y);
                 }
-                
+
                 m_longPressTriggered = true;
                 if (!inInteractiveZone && m_currentView != m_settings_view.get())
                 {
@@ -114,7 +119,7 @@ void DisplayManager::displayLoop()
                     m_currentView->setInitialRender(false);
                 }
             }
-            
+
             // Touch continu - continuer à envoyer les coordonnées à la vue
             if (!m_views.empty() && !m_sleepMode && m_currentViewIdx < m_views.size())
             {
@@ -135,34 +140,48 @@ void DisplayManager::displayLoop()
             unsigned long touchDuration = now - m_touchStartTime;
             if (touchDuration < 1000)
             {
-                // Essayer de passer le touch à la vue courante
-                bool touchHandled = false;
-                if (m_currentView != nullptr)
+                // Check for swipe up or down
+                int deltaX = m_touchEndX - m_touchX;
+                int deltaY = m_touchEndY - m_touchY;
+                bool isSwipe = (std::abs(deltaY) > 50) && (std::abs(deltaX) < std::abs(deltaY));
+                if (isSwipe)
                 {
-                    int touch_x = m_touchX;
-                    int touch_y = m_touchY;
-                    if (Config::display_rotated)
-                    {
-                        // Ajuster les coordonnées touchées si l'écran est en rotation 180°
-                        touch_y = touch_y + 20;
-                    }
-                    ESP_LOGI("DisplayManager", "Passing touch at (%d, %d) to current view", touch_x, touch_y);
-                    touchHandled = m_currentView->handleTouch(touch_x, touch_y);
+                    // Toggle rotation
+                    Config::setDisplayRotated(!Config::display_rotated);
+                    applyRotationFromConfig();
+                    ESP_LOGI("DisplayManager", "Swipe detected - toggling rotation");
                 }
-                // Si la vue n'a pas géré le touch, changer de vue
-                if (!touchHandled)
+                else
                 {
-                    // si clic à gauche de l'écran, vue précédente, sinon suivante
-                    if (m_currentView == m_settings_view.get())
-                        nextView(0); // Retour de la vue réglages à la vue précédente
-                    else if (m_touchX < (m_state.screenW / 2))
-                        nextView(-1);
-                    else
-                        nextView();
+                    // Essayer de passer le touch à la vue courante
+                    bool touchHandled = false;
+                    if (m_currentView != nullptr)
+                    {
+                        int touch_x = m_touchX;
+                        int touch_y = m_touchY;
+                        if (Config::display_rotated)
+                        {
+                            // Ajuster les coordonnées touchées si l'écran est en rotation 180°
+                            touch_y = touch_y + 20;
+                        }
+                        ESP_LOGI("DisplayManager", "Passing touch at (%d, %d) to current view", touch_x, touch_y);
+                        touchHandled = m_currentView->handleTouch(touch_x, touch_y);
+                    }
+                    // Si la vue n'a pas géré le touch, changer de vue
+                    if (!touchHandled)
+                    {
+                        // si clic à gauche de l'écran, vue précédente, sinon suivante
+                        if (m_currentView == m_settings_view.get())
+                            nextView(0); // Retour de la vue réglages à la vue précédente
+                        else if (m_touchX < (m_state.screenW / 2))
+                            nextView(-1);
+                        else
+                            nextView();
+                    }
                 }
             }
         }
-        
+
         // Plus de touch détecté - notifier la vue que le touch est terminé
         if (m_wasTouched && !m_views.empty() && !m_sleepMode && m_currentViewIdx < m_views.size())
         {
